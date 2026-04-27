@@ -1,0 +1,28 @@
+
+DROP TABLE PERIFERICO CASCADE CONSTRAINTS;
+DROP TABLE PC CASCADE CONSTRAINTS;
+
+
+CREATE TABLE PC (
+    id NUMBER PRIMARY KEY,
+    marca VARCHAR2(100) NOT NULL,
+    precio NUMBER(10, 2) NOT NULL,
+    estado VARCHAR2(10) DEFAULT 'A'
+);
+
+
+CREATE TABLE PERIFERICO (
+    id NUMBER PRIMARY KEY,
+    idPc NUMBER NOT NULL,
+    nombre VARCHAR2(100) NOT NULL,
+    precio NUMBER(10, 2) NOT NULL,
+    es_gamer NUMBER(1) DEFAULT 0, 
+    estado VARCHAR2(10) DEFAULT 'A',
+    CONSTRAINT fk_pc_periferico FOREIGN KEY (idPc) REFERENCES PC(id) ON DELETE CASCADE
+);
+
+
+INSERT INTO PC (id, marca, precio, estado) VALUES (1, 'Asus ROG', 4500000, 'A');
+INSERT INTO PERIFERICO (id, idPc, nombre, precio, es_gamer, estado) VALUES (101, 1, 'Mouse Razer', 150000, 1, 'A');
+
+COMMIT;
