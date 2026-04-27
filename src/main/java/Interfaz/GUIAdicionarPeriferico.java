@@ -43,9 +43,9 @@ public class GUIAdicionarPeriferico extends javax.swing.JFrame {
         txtId2 = new javax.swing.JTextField();
         txtMarca = new javax.swing.JTextField();
         txtPrecio = new javax.swing.JTextField();
-        cbEsGamer = new javax.swing.JComboBox<>();
         jLabel6 = new javax.swing.JLabel();
         txtIdPc = new javax.swing.JTextField();
+        cbEsGamer = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -61,8 +61,6 @@ public class GUIAdicionarPeriferico extends javax.swing.JFrame {
         jLabel4.setText("Gamer:");
 
         txtId2.addActionListener(this::txtId2ActionPerformed);
-
-        cbEsGamer.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "True", "False" }));
 
         jLabel6.setText("Id Pc:");
 
@@ -85,7 +83,7 @@ public class GUIAdicionarPeriferico extends javax.swing.JFrame {
                                 .addGroup(layout.createSequentialGroup()
                                     .addComponent(jLabel4)
                                     .addGap(18, 18, 18)
-                                    .addComponent(cbEsGamer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(cbEsGamer, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGroup(layout.createSequentialGroup()
                                     .addComponent(jLabel3)
                                     .addGap(18, 18, 18)
@@ -125,8 +123,8 @@ public class GUIAdicionarPeriferico extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
-                    .addComponent(cbEsGamer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 71, Short.MAX_VALUE)
+                    .addComponent(cbEsGamer))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 74, Short.MAX_VALUE)
                 .addComponent(btnGuardar)
                 .addGap(43, 43, 43))
         );
@@ -137,30 +135,48 @@ public class GUIAdicionarPeriferico extends javax.swing.JFrame {
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
         try {
 
-            int id = Integer.parseInt(txtId2.getText());
-            int idPc = Integer.parseInt(txtIdPc.getText());
-            String nombre = txtMarca.getText(); 
-            double precio = Double.parseDouble(txtPrecio.getText());
-
-            boolean esGamer = cbEsGamer.getSelectedItem().toString().equals("Si");
-
-            if (Servicio.ServicioPC.buscarPorId(idPc) == null) {
-                JOptionPane.showMessageDialog(this, "ERROR: No existe un PC con el ID " + idPc + ".\nDebe crearlo primero.");
-                return; 
-            }
-
-            Periferico nuevoPeri = new Periferico(id, idPc, nombre, precio, esGamer, "A");
-
-            if (Servicio.ServicioPeriferico.grabarPeriferico(nuevoPeri)) {
-                JOptionPane.showMessageDialog(this, "Periférico asociado al PC " + idPc + " correctamente.");
-                limpiarCampos();
-            } else {
-                JOptionPane.showMessageDialog(this, "Error al guardar. Revise que el ID del periférico no esté repetido.");
-            }
-
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Verifique que los campos numéricos sean correctos.");
+        if (txtId2.getText().isEmpty() || txtIdPc.getText().isEmpty() || 
+            txtMarca.getText().isEmpty() || txtPrecio.getText().isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Por favor, llene todos los campos.");
+            return;
         }
+
+        int id = Integer.parseInt(txtId2.getText());
+        int idPc = Integer.parseInt(txtIdPc.getText());
+        String nombre = txtMarca.getText();
+        double precio = Double.parseDouble(txtPrecio.getText());
+        boolean esGamer = cbEsGamer.isSelected();
+
+        com.mycompany.model.Pc pcExistente = Servicio.ServicioPC.buscarPcPorId(idPc);
+
+        if (pcExistente == null) {
+            javax.swing.JOptionPane.showMessageDialog(this, 
+                "ERROR: El PC con ID " + idPc + " no existe.\n" +
+                "Debe usar un ID de PC válido que ya esté registrado.", 
+                "Validación de PC", javax.swing.JOptionPane.WARNING_MESSAGE);
+            return; 
+        }
+
+        com.mycompany.model.Periferico nuevoPeri = new com.mycompany.model.Periferico(id, idPc, nombre, precio, "A");
+        nuevoPeri.setEsGamer(esGamer); 
+
+        if (Servicio.ServicioPeriferico.grabarPeriferico(nuevoPeri)) {
+            javax.swing.JOptionPane.showMessageDialog(this, "¡Periférico guardado con éxito!");
+
+            txtId2.setText("");
+            txtIdPc.setText("");
+            txtMarca.setText("");
+            txtPrecio.setText("");
+            cbEsGamer.setSelected(false);
+        } else {
+            javax.swing.JOptionPane.showMessageDialog(this, "Error al guardar: Revise la consola para más detalles.");
+        }
+        
+    } catch (NumberFormatException e) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Error: El ID y el Precio deben ser números válidos.");
+    } catch (Exception e) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Error inesperado: " + e.getMessage());
+        e.printStackTrace(); 
     }
     }//GEN-LAST:event_btnGuardarActionPerformed
 
@@ -199,7 +215,7 @@ public class GUIAdicionarPeriferico extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnGuardar;
-    private javax.swing.JComboBox<String> cbEsGamer;
+    private javax.swing.JCheckBox cbEsGamer;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

@@ -156,21 +156,23 @@ public class GUIActualizarPeriferico extends javax.swing.JFrame {
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
         try {
-            int id = Integer.parseInt(txtIdperifericoactualizar.getText());
-
-            Periferico peri = Servicio.ServicioPeriferico.buscarPorId(id);
-
-            if (peri != null) {
-                txtMarcaactualizar.setText(peri.getNombre());
-                txtPrecioactualizar.setText(String.valueOf(peri.getPrecio()));
-                txtIdPCactualizar.setText(String.valueOf(peri.getIdPc()));
-                txtEstadoactualizar.setText(peri.getEstado());
-            } else {
-                JOptionPane.showMessageDialog(this, "Periférico no encontrado.");
-            }
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "ID no válido.");
+        int id = Integer.parseInt(txtIdperifericoactualizar.getText());
+        
+        com.mycompany.model.Periferico peri = Servicio.ServicioPeriferico.buscarPerifericoPorId(id);
+        
+        if (peri != null) {
+ 
+            txtMarcaactualizar.setText(peri.getNombre());
+            txtPrecioactualizar.setText(String.valueOf(peri.getPrecio()));
+            txtEstadoactualizar.setText(peri.getEstado());
+            txtIdPCactualizar.setText(String.valueOf(peri.getIdPc()));
+            
+            JOptionPane.showMessageDialog(this, "Periférico encontrado");
+        } else {
+            JOptionPane.showMessageDialog(this, "Periférico no encontrado");
         }
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(this, "ID inválido");
     }
     }//GEN-LAST:event_btnBuscarActionPerformed
 
@@ -178,21 +180,31 @@ public class GUIActualizarPeriferico extends javax.swing.JFrame {
         try {
 
             int id = Integer.parseInt(txtIdperifericoactualizar.getText());
-            int idPc = Integer.parseInt(txtIdPCactualizar.getText());
-            String marca = txtMarcaactualizar.getText();
-            double precio = Double.parseDouble(txtPrecioactualizar.getText());
-            String estado = txtEstadoactualizar.getText();
+            int nuevoIdPc = Integer.parseInt(txtIdPCactualizar.getText()); 
+            String nuevoNombre = txtMarcaactualizar.getText();
+            double nuevoPrecio = Double.parseDouble(txtPrecioactualizar.getText());
 
-            Periferico editadoPeriferico = new Periferico(id, idPc, marca, precio, estado);
+            com.mycompany.model.Pc pcDestino = Servicio.ServicioPC.buscarPcPorId(nuevoIdPc);
 
-            if (ServicioPeriferico.actualizarPeriferico(editadoPeriferico)) {
-                JOptionPane.showMessageDialog(this, "¡Registro actualizado correctamente!");
-            } else {
-                JOptionPane.showMessageDialog(this, "No se pudo actualizar (ID no encontrado o error de archivo).");
+            if (pcDestino == null) {
+               
+                javax.swing.JOptionPane.showMessageDialog(this, 
+                    "ERROR: El PC con ID " + nuevoIdPc + " no existe.\n" +
+                    "No se puede asignar el periférico a un equipo inexistente.", 
+                    "PC No Encontrado", javax.swing.JOptionPane.ERROR_MESSAGE);
+                return; 
             }
 
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error al procesar los datos: " + e.getMessage());
+            com.mycompany.model.Periferico p = new com.mycompany.model.Periferico(id, nuevoIdPc, nuevoNombre, nuevoPrecio, "A");
+
+            if (Servicio.ServicioPeriferico.actualizarPeriferico(p)) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Periférico actualizado y vinculado al PC " + nuevoIdPc);
+            } else {
+                javax.swing.JOptionPane.showMessageDialog(this, "Error técnico al actualizar en la base de datos.");
+            }
+
+        } catch (NumberFormatException e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Error: Verifique que los IDs y el Precio sean números.");
         }
     }//GEN-LAST:event_btnActualizarActionPerformed
 

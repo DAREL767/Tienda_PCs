@@ -124,42 +124,40 @@ public class GUIActualizarPc extends javax.swing.JFrame {
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
         try {
-            int id = Integer.parseInt(txtIdActualizar.getText()); 
+        int id = Integer.parseInt(txtIdActualizar.getText());
+        
+        com.mycompany.model.Pc encontrado = Servicio.ServicioPC.buscarPcPorId(id);
+        
+        if (encontrado != null) {
 
-            Pc pc = Servicio.ServicioPC.buscarPorId(id);
-
-            if (pc != null) {
-
-                txtMarca.setText(pc.getMarca());
-                txtPrecio.setText(String.valueOf(pc.getPrecio()));
-                txtEstado.setText(pc.getEstado());
-
-                JOptionPane.showMessageDialog(this, "Registro encontrado.");
-            } else {
-                JOptionPane.showMessageDialog(this, "El PC con ID " + id + " no existe o está inactivo.");
-            }
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "ID no válido.");
+            txtMarca.setText(encontrado.getMarca());
+            txtPrecio.setText(String.valueOf(encontrado.getPrecio()));
+            txtEstado.setText(encontrado.getEstado());
+            JOptionPane.showMessageDialog(this, "Registro encontrado");
+        } else {
+            JOptionPane.showMessageDialog(this, "PC no existe en el sistema");
         }
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(this, "Por favor ingresa un ID válido");
     }
     }//GEN-LAST:event_btnBuscarActionPerformed
 
     private void btnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarActionPerformed
         try {
-            int id = Integer.parseInt(txtIdActualizar.getText());
-            String marca = txtMarca.getText();
-            double precio = Double.parseDouble(txtPrecio.getText());
 
-            Pc pcModificado = new Pc(id, marca, precio, "A");
+        int id = Integer.parseInt(txtIdActualizar.getText());
+        String marca = txtMarca.getText();
+        double precio = Double.parseDouble(txtPrecio.getText());
+        String estado = txtEstado.getText(); 
 
-            if (Servicio.ServicioPC.actualizarPC(pcModificado)) {
-                JOptionPane.showMessageDialog(this, "PC actualizado correctamente en la base de datos.");
-            } else {
-                JOptionPane.showMessageDialog(this, "Error al actualizar.");
-            }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error en los datos ingresados.");
-        }
+        com.mycompany.model.Pc pcEditada = new com.mycompany.model.Pc(id, marca, precio, estado);
+
+        Servicio.ServicioPC.actualizarPc(pcEditada);
+
+        javax.swing.JOptionPane.showMessageDialog(this, "PC actualizada correctamente");
+        
+    } catch (Exception e) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Error al actualizar: " + e.getMessage());
     }
     }//GEN-LAST:event_btnActualizarActionPerformed
 

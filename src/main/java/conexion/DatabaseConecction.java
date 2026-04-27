@@ -13,9 +13,9 @@ import java.sql.SQLException;
  * @author ORIANA BONILLA
  */
 public class DatabaseConecction {
-    private static String DB_URL  = "jdbc:oracle:thin:@localhost:1521:XE";
-    private static String USER = "PER2026";
-    private static String PASS = "PER2026";
+    private static String DB_URL  = "jdbc:oracle:thin:@localhost:1521/XEPDB1";
+    private static String USER = "system";
+    private static String PASS = "ORACLE";
     
     public static Connection getConnection() {
         Connection connection = null;

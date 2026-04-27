@@ -108,37 +108,25 @@ public class GUIAdicionarPc extends javax.swing.JFrame {
     private void btnGuardarPcActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarPcActionPerformed
         try {
 
-            if (txtId.getText().isEmpty() || txtMarca.getText().isEmpty() || txtPrecio.getText().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios.");
-                return;
-            }
+        int id = Integer.parseInt(txtId.getText());
+        String marca = txtMarca.getText();
+        double precio = Double.parseDouble(txtPrecio.getText());
+        String estado = "A"; 
 
-            int id = Integer.parseInt(txtId.getText());
-            String marca = txtMarca.getText();
-            double precio = Double.parseDouble(txtPrecio.getText());
+        com.mycompany.model.Pc nuevoPc = new com.mycompany.model.Pc(id, marca, precio, estado);
 
-            Pc nuevoPc = new Pc(id, marca, precio, "A");
+        Servicio.ServicioPC.guardarPc(nuevoPc);
 
-            boolean exito = Servicio.ServicioPC.grabarPC(nuevoPc);
-
-            if (exito) {
-                JOptionPane.showMessageDialog(this, "PC guardado exitosamente en la base de datos.");
-                limpiarCampos();
-            } else {
-                JOptionPane.showMessageDialog(this, "Error: El ID ya existe o hubo un problema con la conexión.");
-            }
-
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Error: El ID y el Precio deben ser valores numéricos.");
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Ocurrió un error inesperado: " + e.getMessage());
-        }
-    }
-
-    private void limpiarCampos() {
+        javax.swing.JOptionPane.showMessageDialog(this, "PC Guardado exitosamente");
+        
         txtId.setText("");
         txtMarca.setText("");
         txtPrecio.setText("");
+        
+    } catch (NumberFormatException e) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Error: El ID y el Precio deben ser numéricos");
+    } catch (Exception e) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Error inesperado: " + e.getMessage());
     }
     }//GEN-LAST:event_btnGuardarPcActionPerformed
 

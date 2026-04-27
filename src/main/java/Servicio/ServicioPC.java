@@ -6,8 +6,6 @@ package Servicio;
 
 import com.mycompany.model.Pc;
 import conexion.DatabaseConecction;
-import java.io.FileNotFoundException;
-import java.io.RandomAccessFile;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -27,143 +25,115 @@ public class ServicioPC {
     private static ResultSet rs = null;
     
     
-    public static boolean grabarPC(Pc comp) {
-    String sql = "INSERT INTO PC (ID, MARCA, PRECIO, ESTADO) VALUES (?, ?, ?, ?)";
-    
-    try {
+    public static void guardarPc(Pc miPc) {
+        String sql = "INSERT INTO PC (id, marca, precio, estado) VALUES (?, ?, ?, ?)";
         
-        conn = DatabaseConecction.getConnection();
-        PreparedStatement pstmt = conn.prepareStatement(sql);
-        pstmt.setInt(1, comp.getId());
-        pstmt.setString(2, comp.getMarca());
-        pstmt.setDouble(3, comp.getPrecio());
-        pstmt.setString(4, "A"); 
-        
-        return pstmt.executeUpdate() > 0;
-        
-    } catch (SQLException ex) {
-        System.out.println("Error SQL: " + ex.getMessage());
-        return false;
-    } finally {
-        cerrarConexiones();
-    }
-}
-    
-    public static boolean actualizarPC(Pc p) {
-        String sql = "UPDATE PC SET MARCA = ?, PRECIO = ? WHERE ID = ?";
-        try {
+        try (Connection con = DatabaseConecction.getConnection(); 
+             PreparedStatement ps = con.prepareStatement(sql)) {
             
-            conn = DatabaseConecction.getConnection();
-            pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, p.getMarca());
-            pstmt.setDouble(2, p.getPrecio());
-            pstmt.setInt(3, p.getId());
-            return pstmt.executeUpdate() > 0;
+            ps.setInt(1, miPc.getId());
+            ps.setString(2, miPc.getMarca());
+            ps.setDouble(3, miPc.getPrecio());
+            ps.setString(4, miPc.getEstado());
             
-        } catch (SQLException ex) {
-            return false;
-        } finally {
-            cerrarConexiones();
+            ps.executeUpdate();
+            System.out.println("Pc guardado: " + miPc.getMarca());
+            
+        } catch (SQLException e) {
+            System.err.println("Error al guardar Pc: " + e.getMessage());
         }
     }
-}
     
-    public static Pc buscarPorIdOracle(int id) {
-    Pc pc = null;
-
-    try {
-        Connection conn = DatabaseConecction.getConnection();
-
-        String sql = "SELECT * FROM PC WHERE ID = ?";
-        PreparedStatement ps = conn.prepareStatement(sql);
+    public static void actualizarPc(Pc miPc) {
+        String sql = "UPDATE PC SET marca=?, precio=?, estado=? WHERE id=?";
+        
+        try (Connection con = DatabaseConecction.getConnection(); 
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            
+            ps.setString(1, miPc.getMarca());
+            ps.setDouble(2, miPc.getPrecio());
+            ps.setString(3, miPc.getEstado());
+            ps.setInt(4, miPc.getId());
+            
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("Error al actualizar Pc: " + e.getMessage());
+        }
+    }
+    
+    public static Pc buscarPcPorId(int idBusqueda) {
+        String sql = "SELECT id, marca, precio, estado FROM PC WHERE id = ?";
+        try (Connection con = DatabaseConecction.getConnection(); // Corregido
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            
+            ps.setInt(1, idBusqueda);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new Pc(
+                        rs.getInt("id"),
+                        rs.getString("marca"),
+                        rs.getDouble("precio"),
+                        rs.getString("estado")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al buscar PC: " + e.getMessage());
+        }
+        return null; 
+    }
+    
+    public static List<Pc> listarPcs() {
+        List<Pc> lista = new ArrayList<>();
+        String sql = "SELECT id, marca, precio, estado FROM PC WHERE estado = 'A'";
+        
+        try (Connection con = DatabaseConecction.getConnection(); // Corregido
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            
+            while (rs.next()) {
+                lista.add(new Pc(
+                    rs.getInt("id"),
+                    rs.getString("marca"),
+                    rs.getDouble("precio"),
+                    rs.getString("estado")
+                ));
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al listar PCs: " + e.getMessage());
+        }
+        return lista;
+    }
+    
+    public void eliminarPc(int id) {
+    String sql = "DELETE FROM PC WHERE id = ?";
+    
+    try (Connection con = DatabaseConecction.getConnection();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+        
         ps.setInt(1, id);
-
-        ResultSet rs = ps.executeQuery();
-
-        if (rs.next()) {
-            pc = new Pc(
-                rs.getInt("ID"),
-                rs.getString("MARCA"),
-                rs.getDouble("PRECIO"),
-                rs.getString("ESTADO")
-            );
-        }
-
-        rs.close();
-        ps.close();
-        conn.close();
-
-    } catch (Exception e) {
-        System.out.println("Error buscar: " + e);
+        ps.executeUpdate();
+        System.out.println("Registro de PC eliminado con éxito.");
+        
+    } catch (SQLException e) {
+        System.err.println("Error al eliminar (verifica si tiene periféricos): " + e.getMessage());
     }
-
-    return pc;
 }
     
-    public static List<Pc> listarPCsOracle() {
-        int id;
-        String marca;
-        double precio;
-        String estado;
-
-        Pc comp = null;
-        List<Pc> Pcs = new ArrayList<>();
-
-        try {
-            conn = DatabaseConecction.getConnection();
-            if (conn != null) {
-                stmt = conn.createStatement();
-               String selectDataSQL = "SELECT ID, MARCA, PRECIO, ESTADO FROM PC WHERE ESTADO = 'A' ORDER BY ID";
-                rs = stmt.executeQuery(selectDataSQL);
-                
-                while (rs.next()) {
-                    id = rs.getInt("ID");
-                    marca = rs.getString("MARCA");
-                    precio = rs.getDouble("PRECIO");
-                    estado = rs.getString("ESTADO");
-                    comp = new Pc(id, marca, precio, estado);
-                    Pcs.add(comp);
-                }   
-            }
-        } catch (Exception ex) {
-            System.out.println("Error! " + ex);
-        } finally {
-        cerrarConexiones();
-        }
-        return Pcs;
-    }
-    
-    public static boolean eliminarLogico(int id) {
-
-        String sql = "UPDATE PC SET ESTADO = 'I' WHERE ID = ?";
-        try {
-            conn = DatabaseConecction.getConnection();
-            pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, id);
-            return pstmt.executeUpdate() > 0;
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            return false;
-        } finally {
-            cerrarConexiones();
-        }
-    }
-    
-    public static double calcularTotalPrecios() {
-        String sql = "SELECT SUM(PRECIO) AS TOTAL FROM PC WHERE ESTADO = 'A'";
-        try {
-            conn = DatabaseConecction.getConnection();
-            pstmt = conn.prepareStatement(sql);
-            rs = pstmt.executeQuery();
+    public static double calcularGranTotal() {
+        double total = 0;
+        String sql = "SELECT SUM(precio) AS total_inventario FROM PC WHERE estado = 'A'";
+        
+        try (Connection con = DatabaseConecction.getConnection(); 
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            
             if (rs.next()) {
-                return rs.getDouble("TOTAL");
+                total = rs.getDouble("total_inventario");
             }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        } finally {
-            cerrarConexiones();
+        } catch (SQLException e) {
+            System.err.println("Error al calcular suma: " + e.getMessage());
         }
-        return 0;
+        return total;
     }
-    
 }        

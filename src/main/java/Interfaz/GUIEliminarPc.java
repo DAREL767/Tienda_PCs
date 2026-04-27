@@ -126,20 +126,26 @@ public class GUIEliminarPc extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
+        try {
         int id = Integer.parseInt(txtIdEliminar.getText());
-    
-        int confirmacion = JOptionPane.showConfirmDialog(this, "¿Seguro que desea eliminar este registro?");
+        
+        int confirmar = javax.swing.JOptionPane.showConfirmDialog(this, 
+                "¿Estás seguro de eliminar este PC? Se borrará permanentemente.", "Confirmar", 
+                javax.swing.JOptionPane.YES_NO_OPTION);
+        
+        if (confirmar == javax.swing.JOptionPane.YES_OPTION) {
 
-        if (confirmacion == JOptionPane.YES_OPTION) {
-            if (Servicio.ServicioPc.eliminarLogico(id)) {
-                JOptionPane.showMessageDialog(this, "Registro eliminado (Inactivo).");
-
-                txtMarca.setText("");
-                txtPrecio.setText("");
-            } else {
-                JOptionPane.showMessageDialog(this, "No se pudo eliminar el registro.");
-            }
+            Servicio.ServicioPC sp = new Servicio.ServicioPC();
+            sp.eliminarPc(id);
+            
+            javax.swing.JOptionPane.showMessageDialog(this, "PC eliminado");
+  
+            txtIdEliminar.setText("");
+            txtMarca.setText("");
+            txtPrecio.setText("");
         }
+    } catch (Exception e) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
     }
     }//GEN-LAST:event_btnEliminarActionPerformed
 
@@ -149,23 +155,21 @@ public class GUIEliminarPc extends javax.swing.JFrame {
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
         try {
-            int id = Integer.parseInt(txtIdActualizar.getText()); 
-
-            Pc pc = Servicio.ServicioPC.buscarPorId(id);
-
-            if (pc != null) {
-
-                txtMarca.setText(pc.getMarca());
-                txtPrecio.setText(String.valueOf(pc.getPrecio()));
-                txtEstado.setText(pc.getEstado());
-
-                JOptionPane.showMessageDialog(this, "Registro encontrado.");
-            } else {
-                JOptionPane.showMessageDialog(this, "El PC con ID " + id + " no existe o está inactivo.");
-            }
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "ID no válido.");
+        int id = Integer.parseInt(txtIdEliminar.getText());
+        
+        com.mycompany.model.Pc encontrado = Servicio.ServicioPC.buscarPcPorId(id);
+        
+        if (encontrado != null) {
+ 
+            txtMarca.setText(encontrado.getMarca());
+            txtPrecio.setText(String.valueOf(encontrado.getPrecio()));
+            txtEstado.setText(encontrado.getEstado());
+            JOptionPane.showMessageDialog(this, "Registro encontrado");
+        } else {
+            JOptionPane.showMessageDialog(this, "PC no existe en el sistema");
         }
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(this, "Por favor ingresa un ID válido");
     }
     }//GEN-LAST:event_btnBuscarActionPerformed
 

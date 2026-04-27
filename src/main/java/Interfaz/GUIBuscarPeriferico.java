@@ -146,21 +146,24 @@ public class GUIBuscarPeriferico extends javax.swing.JFrame {
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
         try {
-            int id = Integer.parseInt(txtIdperifericoactualizar.getText());
-
-            Periferico peri = Servicio.ServicioPeriferico.buscarPorId(id);
-
-            if (peri != null) {
-                txtMarcaactualizar.setText(peri.getNombre());
-                txtPrecioactualizar.setText(String.valueOf(peri.getPrecio()));
-                txtIdPCactualizar.setText(String.valueOf(peri.getIdPc()));
-                txtEstadoactualizar.setText(peri.getEstado());
-            } else {
-                JOptionPane.showMessageDialog(this, "Periférico no encontrado.");
-            }
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "ID no válido.");
+        int id = Integer.parseInt(txtIdperifericobuscar.getText());
+        
+        com.mycompany.model.Periferico peri = Servicio.ServicioPeriferico.buscarPerifericoPorId(id);
+        
+        if (peri != null) {
+ 
+            txtMarcabuscar.setText(peri.getNombre());
+            txtPreciobuscar.setText(String.valueOf(peri.getPrecio()));
+            txtEstadobuscar.setText(peri.getEstado());
+            txtIdPCbuscar.setText(String.valueOf(peri.getIdPc()));
+            
+            JOptionPane.showMessageDialog(this, "Periférico encontrado");
+        } else {
+            JOptionPane.showMessageDialog(this, "Periférico no encontrado");
         }
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(this, "ID inválido");
+    }
     }//GEN-LAST:event_btnBuscarActionPerformed
 
     private void txtMarcabuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtMarcabuscarActionPerformed

@@ -104,18 +104,28 @@ public class GUIListarPeriferico extends javax.swing.JFrame {
 
     private void btnListarPerifericoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnListarPerifericoActionPerformed
         
-    DefaultTableModel modelo = (DefaultTableModel) jListaPeriferico.getModel();
-    modelo.setRowCount(0);
-
-    List<Object[]> datos = Servicio.ServicioPeriferico.listarPerifericosConMarca();
-
-    for (Object[] fila : datos) {
+    String[] columnas = {"ID", "ID PC", "Nombre", "Precio", "Gamer", "Estado"};
+    DefaultTableModel modelo = new DefaultTableModel(columnas, 0);
+    
+    List<com.mycompany.model.Periferico> lista = Servicio.ServicioPeriferico.listarTodos();
+    
+    for (com.mycompany.model.Periferico p : lista) {
+        Object[] fila = {
+            p.getId(),
+            p.getIdPc(),
+            p.getNombre(),
+            p.getPrecio(),
+            p.isEsGamer() ? "SÍ" : "NO",
+            p.getEstado()
+        };
         modelo.addRow(fila);
     }
+    
+    jListaPeriferico.setModel(modelo);
     }//GEN-LAST:event_btnListarPerifericoActionPerformed
 
     private void btnSumatoriaPerifericoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSumatoriaPerifericoActionPerformed
-       double total = ServicioPeriferico.calcularTotalPrecios();
+       double total = ServicioPeriferico.obtenerSumaPrecios();
         lblTotal2.setText("Total Precios: $" + total);
     }//GEN-LAST:event_btnSumatoriaPerifericoActionPerformed
 

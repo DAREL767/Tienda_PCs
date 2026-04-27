@@ -5,11 +5,8 @@
 package Servicio;
 
 import com.mycompany.model.Periferico;
-import conexion.DatabaseConecction;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import conexion.DatabaseConecction; 
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,113 +31,104 @@ public class ServicioPeriferico {
     } 
 
     public static boolean grabarPeriferico(Periferico peri) {
+
         
-        String sql = "INSERT INTO PERIFERICO (ID, IDPC, NOMBRE, PRECIO, ES_GAMER, ESTADO) VALUES (?, ?, ?, ?, ?, ?)";
-        
-        try {
-            conn = DatabaseConecction.getConnection();
-            pstmt = conn.prepareStatement(sql);
-            
+        String sql = "INSERT INTO PERIFERICO (id, idPc, nombre, precio, es_gamer, estado) VALUES (?, ?, ?, ?, ?, ?)";
+
+        try (Connection conn = DatabaseConecction.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
             pstmt.setInt(1, peri.getId());
-            pstmt.setInt(2, peri.getIdPC());
+            pstmt.setInt(2, peri.getIdPc());
             pstmt.setString(3, peri.getNombre());
             pstmt.setDouble(4, peri.getPrecio());
             pstmt.setInt(5, peri.isEsGamer() ? 1 : 0); 
             pstmt.setString(6, "A"); 
-            
+
             return pstmt.executeUpdate() > 0;
+
         } catch (SQLException ex) {
-            System.out.println("Error al grabar periférico: " + ex.getMessage());
+            System.out.println("Error al grabar: " + ex.getMessage());
             return false;
-        } finally {
-            cerrarConexiones();
         }
     }
 
-    public static Periferico buscarPorId(int pId) {
-        String sql = "SELECT * FROM PERIFERICO WHERE ID = ? AND ESTADO = 'A'";
-        try {
-            conn = DatabaseConecction.getConnection();
-            pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, pId);
-            rs = pstmt.executeQuery();
-            
+    public static Periferico buscarPerifericoPorId(int idBusqueda) {
+    String sql = "SELECT * FROM PERIFERICO WHERE ID = ?";
+    try (Connection conn = DatabaseConecction.getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        
+        pstmt.setInt(1, idBusqueda);
+        try (ResultSet rs = pstmt.executeQuery()) {
             if (rs.next()) {
-                return new Periferico(
+                
+                Periferico p = new Periferico(
                     rs.getInt("ID"),
                     rs.getInt("IDPC"),
                     rs.getString("NOMBRE"),
                     rs.getDouble("PRECIO"),
-                    rs.getInt("ES_GAMER") == 1,
                     rs.getString("ESTADO")
                 );
-            }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        } finally {
-            cerrarConexiones();
-        }
-        return null;
-    }
-    
-    public static List<Object[]> listarPerifericosConMarca() {
-        List<Object[]> lista = new ArrayList<>();
 
-        String sql = "SELECT p.ID, p.NOMBRE, p.PRECIO, pc.MARCA " +
-                     "FROM PERIFERICO p " +
-                     "INNER JOIN PC pc ON p.IDPC = pc.ID " +
-                     "WHERE p.ESTADO = 'A'";
-        try {
-            conn = DatabaseConecction.getConnection();
-            pstmt = conn.prepareStatement(sql);
-            rs = pstmt.executeQuery();
+                p.setEsGamer(rs.getInt("ES_GAMER") == 1);
+                return p;
+            }
+        }
+    } catch (SQLException ex) {
+        System.err.println("Error al buscar Periférico: " + ex.getMessage());
+    }
+    return null;
+}
+    
+    public static List<Periferico> listarTodos() {
+        List<Periferico> lista = new ArrayList<>();
+        String sql = "SELECT * FROM PERIFERICO WHERE ESTADO = 'A'";
+        
+        try (Connection conn = DatabaseConecction.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+            
             while (rs.next()) {
-                lista.add(new Object[]{
+                lista.add(new Periferico(
                     rs.getInt("ID"),
+                    rs.getInt("IDPC"),
                     rs.getString("NOMBRE"),
                     rs.getDouble("PRECIO"),
-                    rs.getString("MARCA") 
-                });
+                    rs.getString("ESTADO")
+                ));
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
-        } finally {
-            cerrarConexiones();
         }
         return lista;
     }
     
-    public static double calcularTotalPrecios() {
-        String sql = "SELECT SUM(PRECIO) AS TOTAL FROM PERIFERICO WHERE ESTADO = 'A'";
-        try {
-            conn = DatabaseConecction.getConnection();
-            pstmt = conn.prepareStatement(sql);
-            rs = pstmt.executeQuery();
-            if (rs.next()) {
-                return rs.getDouble("TOTAL");
-            }
+    public static double obtenerSumaPrecios() {
+        String sql = "SELECT SUM(PRECIO) FROM PERIFERICO WHERE ESTADO = 'A'";
+        try (Connection conn = DatabaseConecction.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+            if (rs.next()) return rs.getDouble(1);
         } catch (SQLException ex) {
             ex.printStackTrace();
-        } finally {
-            cerrarConexiones();
         }
         return 0;
     }
-}
-    
+
     public static boolean actualizarPeriferico(Periferico p) {
-        String sql = "UPDATE PERIFERICO SET NOMBRE = ?, PRECIO = ? WHERE ID = ?";
-        try {
-            conn = DatabaseConecction.getConnection();
-            pstmt = conn.prepareStatement(sql);
+        String sql = "UPDATE PERIFERICO SET NOMBRE = ?, PRECIO = ?, IDPC = ? WHERE ID = ?";
+        try (Connection conn = conexion.DatabaseConecction.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
             pstmt.setString(1, p.getNombre());
             pstmt.setDouble(2, p.getPrecio());
-            pstmt.setInt(3, p.getId());
+            pstmt.setInt(3, p.getIdPc()); 
+            pstmt.setInt(4, p.getId());
+
             return pstmt.executeUpdate() > 0;
         } catch (SQLException ex) {
+            System.out.println("Error al actualizar: " + ex.getMessage());
             return false;
-        } finally {
-            cerrarConexiones();
         }
     }
     
@@ -159,4 +147,3 @@ public class ServicioPeriferico {
     }
     
 }
-

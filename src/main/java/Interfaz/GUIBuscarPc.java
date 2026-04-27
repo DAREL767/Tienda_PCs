@@ -42,7 +42,7 @@ public class GUIBuscarPc extends javax.swing.JFrame {
         txtMarcabuscar = new javax.swing.JTextField();
         btnBuscar = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jLabel2.setText("Marca: ");
 
@@ -119,23 +119,22 @@ public class GUIBuscarPc extends javax.swing.JFrame {
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
         try {
-            int id = Integer.parseInt(txtIdActualizar.getText()); 
+        int id = Integer.parseInt(txtIdbuscar.getText());
+        
+        com.mycompany.model.Pc encontrado = Servicio.ServicioPC.buscarPcPorId(id);
+        
+        if (encontrado != null) {
 
-            Pc pc = Servicio.ServicioPC.buscarPorId(id);
-
-            if (pc != null) {
-                // Hacemos visibles los datos en la interfaz
-                txtMarca.setText(pc.getMarca());
-                txtPrecio.setText(String.valueOf(pc.getPrecio()));
-                txtEstado.setText(pc.getEstado());
-
-                JOptionPane.showMessageDialog(this, "Registro encontrado.");
-            } else {
-                JOptionPane.showMessageDialog(this, "El PC con ID " + id + " no existe o está inactivo.");
-            }
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "ID no válido.");
+            txtMarcabuscar.setText(encontrado.getMarca());
+            txtPreciobuscar.setText(String.valueOf(encontrado.getPrecio()));
+            txtEstadobuscar.setText(encontrado.getEstado());
+            JOptionPane.showMessageDialog(this, "Registro encontrado");
+        } else {
+            JOptionPane.showMessageDialog(this, "PC no existe en el sistema");
         }
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(this, "Por favor ingresa un ID válido");
+    }
     }//GEN-LAST:event_btnBuscarActionPerformed
 
     private void txtMarcabuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtMarcabuscarActionPerformed

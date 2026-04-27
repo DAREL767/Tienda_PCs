@@ -7,6 +7,7 @@ package Interfaz;
 import Servicio.ServicioPC;
 import com.mycompany.model.Pc;
 import java.util.List;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -101,19 +102,20 @@ public class GUIListarPc extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnListarPcActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnListarPcActionPerformed
-        DefaultTableModel modelo = (DefaultTableModel) jListaPc.getModel();
-        modelo.setRowCount(0); 
+        String[] col = {"ID", "Marca", "Precio", "Estado"};
+        DefaultTableModel modelo = new DefaultTableModel(col, 0);
 
-        List<Pc> pcs = Servicio.ServicioPC.listarPCsOracle();
+        List<com.mycompany.model.Pc> lista = Servicio.ServicioPC.listarPcs();
 
-        for (Pc p : pcs) {
+        for (com.mycompany.model.Pc p : lista) {
             Object[] fila = {p.getId(), p.getMarca(), p.getPrecio(), p.getEstado()};
             modelo.addRow(fila);
         }
+        jListaPc.setModel(modelo);
     }//GEN-LAST:event_btnListarPcActionPerformed
 
     private void btnSumatoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSumatoriaActionPerformed
-        double total = Servicio.ServicioPC.calcularTotalPrecios();
+        double total = Servicio.ServicioPC.calcularGranTotal();
     
     lblTotal.setText("Sumatoria Total: $" + total);
     
