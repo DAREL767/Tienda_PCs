@@ -1,0 +1,9 @@
+/nbproject/private/
+/build/
+/dist/
+/nbbuild/
+/nbactions.xml
+/nb-configuration.xml
+.DS_Store
+*.class
+/target/
