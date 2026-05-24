@@ -3,23 +3,25 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.mycompany.model;
+import org.bson.types.ObjectId;
 
 /**
  *
  * @author jamed
  */
 public class Periferico {
-    
-    private int id;
-    private int idPc;
+    private ObjectId idMongo;
+    private int id; 
     private String nombre;
     private double precio;
     private boolean esGamer;
     private String estado;
 
-    public Periferico(int id, int idPc, String nombre, double precio, String estado) {
+    public Periferico() {
+    }
+    
+    public Periferico(int id, String nombre, double precio, boolean esGamer, String estado) {
         this.id = id;
-        this.idPc = idPc;
         this.nombre = nombre;
         this.precio = precio;
         this.esGamer = esGamer;
@@ -40,14 +42,6 @@ public class Periferico {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public int getIdPc() {
-        return idPc;
-    }
-
-    public void setIdPc(int idPc) {
-        this.idPc = idPc;
     }
 
     public String getNombre() {
@@ -72,8 +66,7 @@ public class Periferico {
 
     public void setEstado(String estado) {
         this.estado = estado;
-    }
-    
+    }   
     
     
 }

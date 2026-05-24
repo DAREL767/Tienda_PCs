@@ -4,22 +4,20 @@
  */
 package Interfaz;
 
-import Servicio.ServicioPC;
-import com.mycompany.model.Pc;
 import javax.swing.JOptionPane;
 
 /**
  *
  * @author jamed
  */
-public class GUIBuscarPc extends javax.swing.JFrame {
+public class GUIBuscarCliente extends javax.swing.JFrame {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(GUIBuscarPc.class.getName());
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(GUIBuscarCliente.class.getName());
 
     /**
-     * Creates new form GUIBuscarPc
+     * Creates new form GUIBuscarCliente
      */
-    public GUIBuscarPc() {
+    public GUIBuscarCliente() {
         initComponents();
         this.setResizable(false);
         this.pack(); 
@@ -35,23 +33,17 @@ public class GUIBuscarPc extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel5 = new javax.swing.JLabel();
+        txtIdbuscar = new javax.swing.JTextField();
+        txtMarcabuscar = new javax.swing.JTextField();
+        btnBuscar = new javax.swing.JButton();
         txtPreciobuscar = new javax.swing.JTextField();
         txtEstadobuscar = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        txtIdbuscar = new javax.swing.JTextField();
-        txtMarcabuscar = new javax.swing.JTextField();
-        btnBuscar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-
-        jLabel2.setText("Marca: ");
-
-        jLabel1.setText("Id: ");
-
-        jLabel3.setText("Precio:");
 
         jLabel5.setText("Estado:");
 
@@ -61,6 +53,12 @@ public class GUIBuscarPc extends javax.swing.JFrame {
 
         btnBuscar.setText("Buscar");
         btnBuscar.addActionListener(this::btnBuscarActionPerformed);
+
+        jLabel2.setText("Nombre:");
+
+        jLabel1.setText("Cedula:");
+
+        jLabel3.setText("Correo:");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -87,7 +85,7 @@ public class GUIBuscarPc extends javax.swing.JFrame {
                             .addComponent(jLabel1)
                             .addGap(18, 18, 18)
                             .addComponent(txtIdbuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(169, Short.MAX_VALUE))
+                .addContainerGap(249, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -108,7 +106,7 @@ public class GUIBuscarPc extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
                     .addComponent(txtEstadobuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 51, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 100, Short.MAX_VALUE)
                 .addComponent(btnBuscar)
                 .addGap(40, 40, 40))
         );
@@ -120,37 +118,39 @@ public class GUIBuscarPc extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtIdbuscarActionPerformed
 
+    private void txtMarcabuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtMarcabuscarActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtMarcabuscarActionPerformed
+
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
         try {
             if (txtIdbuscar.getText().trim().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Por favor, ingrese el ID del PC.");
+                JOptionPane.showMessageDialog(this, "Por favor, ingrese la cédula del cliente a buscar.");
                 return;
             }
 
-            int id = Integer.parseInt(txtIdbuscar.getText().trim());
-            Pc pc = Servicio.ServicioPC.buscarPorId(id);
+            int cedula = Integer.parseInt(txtIdbuscar.getText().trim());
+            
+            com.mycompany.model.Cliente cliente = Servicio.ServicioCliente.buscarPorCedula(cedula);
 
-            if (pc != null) {
-                txtIdbuscar.setText(String.valueOf(pc.getId())); 
-                txtMarcabuscar.setText(pc.getMarca());
-                txtPreciobuscar.setText(String.valueOf(pc.getPrecio()));
-                txtEstadobuscar.setText(pc.getEstado());
+            if (cliente != null) {
+                txtMarcabuscar.setText(cliente.getNombre());
+                txtPreciobuscar.setText(cliente.getCorreo());
+                txtEstadobuscar.setText("Activo");
                 
-                txtIdbuscar.setEditable(false); 
+                txtIdbuscar.setEditable(false);
             } else {
-                JOptionPane.showMessageDialog(this, "❌ El PC solicitado no existe o fue eliminado.");
+                JOptionPane.showMessageDialog(this, "❌ Cliente no encontrado o se encuentra Inactivo.");
                 txtMarcabuscar.setText("");
                 txtPreciobuscar.setText("");
                 txtEstadobuscar.setText("");
             }
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "El ID del PC debe ser un número entero.");
+            JOptionPane.showMessageDialog(this, "La cédula debe ser un valor numérico entero.");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al buscar cliente: " + e.getMessage());
         }
     }//GEN-LAST:event_btnBuscarActionPerformed
-
-    private void txtMarcabuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtMarcabuscarActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtMarcabuscarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -174,7 +174,7 @@ public class GUIBuscarPc extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new GUIBuscarPc().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> new GUIBuscarCliente().setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -24,6 +24,34 @@ public class GUIAdicionarPc extends javax.swing.JFrame {
         this.setResizable(false);
         this.pack(); 
         this.setLocationRelativeTo(null);
+        cargarCombos();
+    }
+    
+    private void cargarCombos() {
+        try {
+            com.mongodb.client.MongoDatabase db = conexion.DatabaseConecction.getDatabase();
+
+            cmbClientes.removeAllItems();
+            cmbPerifericos.removeAllItems();
+
+            for (org.bson.Document doc : db.getCollection("Clientes").find(com.mongodb.client.model.Filters.eq("estado", "Activo"))) {
+                Object item = new com.mycompany.model.ComboItem(
+                    doc.getObjectId("_id"), 
+                    doc.getInteger("cedula") + " - " + doc.getString("nombre")
+                );
+                ((javax.swing.JComboBox)cmbClientes).addItem(item);
+            }
+
+            for (org.bson.Document doc : db.getCollection("Perifericos").find(com.mongodb.client.model.Filters.eq("estado", "A"))) {
+                Object item = new com.mycompany.model.ComboItem(
+                    doc.getObjectId("_id"), 
+                    doc.getInteger("id") + " - " + doc.getString("nombre")
+                );
+                ((javax.swing.JComboBox)cmbPerifericos).addItem(item);
+            }
+        } catch (Exception e) {
+            System.err.println("Error al cargar componentes desplegables: " + e.getMessage());
+        }
     }
 
     /**
@@ -42,6 +70,8 @@ public class GUIAdicionarPc extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         txtId = new javax.swing.JTextField();
+        cmbClientes = new javax.swing.JComboBox<>();
+        cmbPerifericos = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -56,31 +86,40 @@ public class GUIAdicionarPc extends javax.swing.JFrame {
 
         txtId.addActionListener(this::txtIdActionPerformed);
 
+        cmbClientes.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cmbClientes.addActionListener(this::cmbClientesActionPerformed);
+
+        cmbPerifericos.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cmbPerifericos.addActionListener(this::cmbPerifericosActionPerformed);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(27, 27, 27)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel3)
-                                .addGap(18, 18, 18)
-                                .addComponent(txtPrecio))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addGap(18, 18, 18)
-                                .addComponent(txtMarca, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel1)
-                                .addGap(18, 18, 18)
-                                .addComponent(txtId, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(221, 221, 221)
-                        .addComponent(btnGuardarPc)))
+                .addGap(221, 221, 221)
+                .addComponent(btnGuardarPc)
                 .addContainerGap(282, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(27, 27, 27)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addGap(18, 18, 18)
+                        .addComponent(txtPrecio))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addGap(18, 18, 18)
+                        .addComponent(txtMarca, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addGap(18, 18, 18)
+                        .addComponent(txtId, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(cmbClientes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cmbPerifericos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(150, 150, 150))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -88,11 +127,13 @@ public class GUIAdicionarPc extends javax.swing.JFrame {
                 .addGap(66, 66, 66)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(txtId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cmbClientes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(txtMarca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtMarca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cmbPerifericos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
@@ -106,33 +147,51 @@ public class GUIAdicionarPc extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnGuardarPcActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarPcActionPerformed
-        try {
+                                            
+    try {
+            if (cmbClientes.getSelectedItem() == null || cmbPerifericos.getSelectedItem() == null) {
+                JOptionPane.showMessageDialog(this, "Error: Debe registrar y seleccionar un Cliente y un Periférico primero.");
+                return;
+            }
 
-        int id = Integer.parseInt(txtId.getText());
-        String marca = txtMarca.getText();
-        double precio = Double.parseDouble(txtPrecio.getText());
-        String estado = "A"; 
+            int id = Integer.parseInt(txtId.getText().trim());
+            String marca = txtMarca.getText().trim();
+            double precio = Double.parseDouble(txtPrecio.getText().trim());
+            String estado = "A";
 
-        com.mycompany.model.Pc nuevoPc = new com.mycompany.model.Pc(id, marca, precio, estado);
+            Pc nuevoPc = new Pc(id, marca, precio, estado);
 
-        Servicio.ServicioPC.guardarPc(nuevoPc);
+            com.mycompany.model.ComboItem clienteSel = (com.mycompany.model.ComboItem) cmbClientes.getSelectedItem();
+            com.mycompany.model.ComboItem perifericoSel = (com.mycompany.model.ComboItem) cmbPerifericos.getSelectedItem();
+            
+            org.bson.types.ObjectId idClienteMongo = clienteSel.getIdMongo();
+            org.bson.types.ObjectId idPerifericoMongo = perifericoSel.getIdMongo();
 
-        javax.swing.JOptionPane.showMessageDialog(this, "PC Guardado exitosamente");
-        
-        txtId.setText("");
-        txtMarca.setText("");
-        txtPrecio.setText("");
-        
-    } catch (NumberFormatException e) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Error: El ID y el Precio deben ser numéricos");
-    } catch (Exception e) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Error inesperado: " + e.getMessage());
-    }
+            ServicioPC.guardarPc(nuevoPc, idClienteMongo, idPerifericoMongo);
+
+            JOptionPane.showMessageDialog(this, "✅ PC Guardado exitosamente.");
+            txtId.setText("");
+            txtMarca.setText("");
+            txtPrecio.setText("");
+            
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Error: El ID y el Precio deben ser numéricos.");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error inesperado: " + e.getMessage());
+        }
     }//GEN-LAST:event_btnGuardarPcActionPerformed
 
     private void txtIdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIdActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtIdActionPerformed
+
+    private void cmbClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbClientesActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cmbClientesActionPerformed
+
+    private void cmbPerifericosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbPerifericosActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cmbPerifericosActionPerformed
 
     /**
      * @param args the command line arguments
@@ -161,6 +220,8 @@ public class GUIAdicionarPc extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnGuardarPc;
+    private javax.swing.JComboBox<String> cmbClientes;
+    private javax.swing.JComboBox<String> cmbPerifericos;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

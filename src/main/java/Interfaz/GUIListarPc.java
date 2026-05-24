@@ -4,11 +4,8 @@
  */
 package Interfaz;
 
-import Servicio.ServicioPC;
-import com.mycompany.model.Pc;
-import java.util.List;
 import javax.swing.JOptionPane;
-import javax.swing.table.DefaultTableModel;
+
 
 /**
  *
@@ -47,13 +44,13 @@ public class GUIListarPc extends javax.swing.JFrame {
 
         jListaPc.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "Id", "Marca", "Precio", "Estado"
+                "Id", "Marca", "Precio", "Cliente", "Periferico"
             }
         ));
         jScrollPane1.setViewportView(jListaPc);
@@ -68,58 +65,79 @@ public class GUIListarPc extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(lblTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(758, 758, 758))
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(45, 45, 45)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 452, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(58, 58, 58)
                         .addComponent(btnListarPc)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnSumatoria)))
+                        .addGap(242, 242, 242)
+                        .addComponent(btnSumatoria))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 580, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(0, 38, Short.MAX_VALUE)
-                .addComponent(lblTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(297, 297, 297))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 274, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 305, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnSumatoria)
                     .addComponent(btnListarPc))
-                .addContainerGap(41, Short.MAX_VALUE))
+                .addContainerGap(10, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnListarPcActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnListarPcActionPerformed
-        String[] col = {"ID", "Marca", "Precio", "Estado"};
-        DefaultTableModel modelo = new DefaultTableModel(col, 0);
-
-        List<com.mycompany.model.Pc> lista = Servicio.ServicioPC.listarPcs();
-
-        for (com.mycompany.model.Pc p : lista) {
-            Object[] fila = {p.getId(), p.getMarca(), p.getPrecio(), p.getEstado()};
-            modelo.addRow(fila);
+       try {
+            String[] columnas = {"ID PC", "Marca", "Precio PC", "Cliente Asignado", "Periférico Incluido"};
+            javax.swing.table.DefaultTableModel modelo = new javax.swing.table.DefaultTableModel(columnas, 0);
+            
+            java.util.List<org.bson.Document> pcs = Servicio.ServicioPC.listarPcs();
+            
+            for (org.bson.Document doc : pcs) {
+                Object[] fila = new Object[5];
+                fila[0] = doc.getInteger("id");
+                fila[1] = doc.getString("marca");
+                fila[2] = doc.getDouble("precio");
+                
+                fila[3] = doc.containsKey("nombre_cliente") ? doc.getString("nombre_cliente") : "Sin cliente";
+                fila[4] = doc.containsKey("nombre_periferico") ? doc.getString("nombre_periferico") : "Sin periférico";
+                
+                modelo.addRow(fila);
+            }
+            
+            jListaPc.setModel(modelo);
+            
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Error al listar en la grilla de PCs: " + e.getMessage());
         }
-        jListaPc.setModel(modelo);
     }//GEN-LAST:event_btnListarPcActionPerformed
 
     private void btnSumatoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSumatoriaActionPerformed
-        double total = Servicio.ServicioPC.calcularGranTotal();
-    
-    lblTotal.setText("Sumatoria Total: $" + total);
-    
-    JOptionPane.showMessageDialog(this, "El valor total de los PCs activos es: $" + total);
+        try {
+            com.mongodb.client.MongoDatabase db = conexion.DatabaseConecction.getDatabase();
+            double total = 0;
+            
+            for (org.bson.Document doc : db.getCollection("PCs").find(com.mongodb.client.model.Filters.eq("estado", "A"))) {
+                total += doc.getDouble("precio");
+            }
+            
+            lblTotal.setText("Total Inventario PCs: $" + total);
+            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al calcular sumatoria: " + e.getMessage());
+        }
     }//GEN-LAST:event_btnSumatoriaActionPerformed
 
     /**

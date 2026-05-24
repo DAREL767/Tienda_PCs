@@ -4,7 +4,6 @@
  */
 package Interfaz;
 
-import Servicio.ServicioPC;
 import com.mycompany.model.Pc;
 import javax.swing.JOptionPane;
 
@@ -127,26 +126,31 @@ public class GUIEliminarPc extends javax.swing.JFrame {
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
         try {
-        int id = Integer.parseInt(txtIdEliminar.getText());
-        
-        int confirmar = javax.swing.JOptionPane.showConfirmDialog(this, 
-                "¿Estás seguro de eliminar este PC? Se borrará permanentemente.", "Confirmar", 
-                javax.swing.JOptionPane.YES_NO_OPTION);
-        
-        if (confirmar == javax.swing.JOptionPane.YES_OPTION) {
+            if (txtIdEliminar.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Por favor, busque un PC primero.");
+                return;
+            }
 
-            Servicio.ServicioPC sp = new Servicio.ServicioPC();
-            sp.eliminarPc(id);
+            int id = Integer.parseInt(txtIdEliminar.getText().trim());
             
-            javax.swing.JOptionPane.showMessageDialog(this, "PC eliminado");
-  
-            txtIdEliminar.setText("");
-            txtMarca.setText("");
-            txtPrecio.setText("");
+            int confirmar = JOptionPane.showConfirmDialog(this, 
+                    "¿Desea dar de baja este PC del inventario (Eliminado Lógico)?", 
+                    "Confirmar", JOptionPane.YES_NO_OPTION);
+
+            if (confirmar == JOptionPane.YES_OPTION) {
+                Servicio.ServicioPC.eliminarPc(id);
+
+                JOptionPane.showMessageDialog(this, "PC marcado como Inactivo correctamente.");
+                
+                txtIdEliminar.setText("");
+                txtIdEliminar.setEditable(true);
+                txtMarca.setText("");
+                txtPrecio.setText("");
+                txtEstado.setText("");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al procesar la baja del PC: " + e.getMessage());
         }
-    } catch (Exception e) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
-    }
     }//GEN-LAST:event_btnEliminarActionPerformed
 
     private void txtIdEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIdEliminarActionPerformed
@@ -154,23 +158,31 @@ public class GUIEliminarPc extends javax.swing.JFrame {
     }//GEN-LAST:event_txtIdEliminarActionPerformed
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
-        try {
-        int id = Integer.parseInt(txtIdEliminar.getText());
-        
-        com.mycompany.model.Pc encontrado = Servicio.ServicioPC.buscarPcPorId(id);
-        
-        if (encontrado != null) {
- 
-            txtMarca.setText(encontrado.getMarca());
-            txtPrecio.setText(String.valueOf(encontrado.getPrecio()));
-            txtEstado.setText(encontrado.getEstado());
-            JOptionPane.showMessageDialog(this, "Registro encontrado");
-        } else {
-            JOptionPane.showMessageDialog(this, "PC no existe en el sistema");
+       try {
+            if (txtIdEliminar.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Por favor, ingrese el ID del PC.");
+                return;
+            }
+
+            int id = Integer.parseInt(txtIdEliminar.getText().trim());
+            Pc pc = Servicio.ServicioPC.buscarPorId(id);
+
+            if (pc != null) {
+                txtIdEliminar.setText(String.valueOf(pc.getId())); 
+                txtMarca.setText(pc.getMarca());
+                txtPrecio.setText(String.valueOf(pc.getPrecio()));
+                txtEstado.setText(pc.getEstado());
+                
+                txtIdEliminar.setEditable(false); 
+            } else {
+                JOptionPane.showMessageDialog(this, "❌ El PC solicitado no existe o fue eliminado.");
+                txtMarca.setText("");
+                txtPrecio.setText("");
+                txtEstado.setText("");
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "El ID del PC debe ser un número entero.");
         }
-    } catch (NumberFormatException e) {
-        JOptionPane.showMessageDialog(this, "Por favor ingresa un ID válido");
-    }
     }//GEN-LAST:event_btnBuscarActionPerformed
 
     /**

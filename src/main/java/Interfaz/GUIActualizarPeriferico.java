@@ -4,7 +4,6 @@
  */
 package Interfaz;
 
-import Servicio.ServicioPeriferico;
 import com.mycompany.model.Periferico;
 import javax.swing.JOptionPane;
 
@@ -156,56 +155,52 @@ public class GUIActualizarPeriferico extends javax.swing.JFrame {
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
         try {
-        int id = Integer.parseInt(txtIdperifericoactualizar.getText());
-        
-        com.mycompany.model.Periferico peri = Servicio.ServicioPeriferico.buscarPerifericoPorId(id);
-        
-        if (peri != null) {
- 
-            txtMarcaactualizar.setText(peri.getNombre());
-            txtPrecioactualizar.setText(String.valueOf(peri.getPrecio()));
-            txtEstadoactualizar.setText(peri.getEstado());
-            txtIdPCactualizar.setText(String.valueOf(peri.getIdPc()));
-            
-            JOptionPane.showMessageDialog(this, "Periférico encontrado");
-        } else {
-            JOptionPane.showMessageDialog(this, "Periférico no encontrado");
+            if (txtIdperifericoactualizar.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Por favor, ingrese el ID del Periférico.");
+                return;
+            }
+
+            int id = Integer.parseInt(txtIdperifericoactualizar.getText().trim());
+            Periferico peri = Servicio.ServicioPeriferico.buscarPorId(id);
+
+            if (peri != null) {
+                txtIdperifericoactualizar.setText(String.valueOf(peri.getId()));
+                txtMarcaactualizar.setText(peri.getNombre());
+                txtPrecioactualizar.setText(String.valueOf(peri.getPrecio()));
+                txtEstadoactualizar.setText("A");
+                
+                txtIdPCactualizar.setText("N/A (Independiente)");
+                txtIdPCactualizar.setEditable(false);
+                txtIdperifericoactualizar.setEditable(false);
+            } else {
+                JOptionPane.showMessageDialog(this, "❌ Periférico no encontrado.");
+                txtMarcaactualizar.setText("");
+                txtPrecioactualizar.setText("");
+                txtEstadoactualizar.setText("");
+                txtIdPCactualizar.setText("");
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "El ID debe ser un número entero.");
         }
-    } catch (NumberFormatException e) {
-        JOptionPane.showMessageDialog(this, "ID inválido");
-    }
     }//GEN-LAST:event_btnBuscarActionPerformed
 
     private void btnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarActionPerformed
         try {
+        int id = Integer.parseInt(txtIdperifericoactualizar.getText().trim());
+        String nuevoNombre = txtMarcaactualizar.getText().trim();
+        double nuevoPrecio = Double.parseDouble(txtPrecioactualizar.getText().trim());
 
-            int id = Integer.parseInt(txtIdperifericoactualizar.getText());
-            int nuevoIdPc = Integer.parseInt(txtIdPCactualizar.getText()); 
-            String nuevoNombre = txtMarcaactualizar.getText();
-            double nuevoPrecio = Double.parseDouble(txtPrecioactualizar.getText());
+        boolean completado = Servicio.ServicioPeriferico.actualizarPeriferico(id, nuevoNombre, nuevoPrecio);
 
-            com.mycompany.model.Pc pcDestino = Servicio.ServicioPC.buscarPcPorId(nuevoIdPc);
-
-            if (pcDestino == null) {
-               
-                javax.swing.JOptionPane.showMessageDialog(this, 
-                    "ERROR: El PC con ID " + nuevoIdPc + " no existe.\n" +
-                    "No se puede asignar el periférico a un equipo inexistente.", 
-                    "PC No Encontrado", javax.swing.JOptionPane.ERROR_MESSAGE);
-                return; 
-            }
-
-            com.mycompany.model.Periferico p = new com.mycompany.model.Periferico(id, nuevoIdPc, nuevoNombre, nuevoPrecio, "A");
-
-            if (Servicio.ServicioPeriferico.actualizarPeriferico(p)) {
-                javax.swing.JOptionPane.showMessageDialog(this, "Periférico actualizado y vinculado al PC " + nuevoIdPc);
-            } else {
-                javax.swing.JOptionPane.showMessageDialog(this, "Error técnico al actualizar en la base de datos.");
-            }
-
-        } catch (NumberFormatException e) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Error: Verifique que los IDs y el Precio sean números.");
+        if (completado) {
+            JOptionPane.showMessageDialog(this, "✅ Periférico actualizado correctamente.");
+            txtIdperifericoactualizar.setEditable(true);
+        } else {
+            JOptionPane.showMessageDialog(this, "❌ Error al intentar actualizar el periférico.");
         }
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(this, "El precio debe ser un valor numérico válido.");
+    }
     }//GEN-LAST:event_btnActualizarActionPerformed
 
     /**

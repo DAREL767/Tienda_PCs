@@ -45,13 +45,18 @@ public class GUIPrincipal extends javax.swing.JFrame {
         jBuscarPc = new javax.swing.JMenuItem();
         jActualizarPc = new javax.swing.JMenuItem();
         jEliminarPc = new javax.swing.JMenuItem();
+        jClientes = new javax.swing.JMenu();
+        jAdicionarCliente = new javax.swing.JMenuItem();
+        jListarClientes = new javax.swing.JMenuItem();
+        jBuscarCliente = new javax.swing.JMenuItem();
+        jActualizarCliente = new javax.swing.JMenuItem();
+        jEliminarCliente = new javax.swing.JMenuItem();
         jPerifericos = new javax.swing.JMenu();
         jAdicionarPeriferico = new javax.swing.JMenuItem();
         jListarPeriferico = new javax.swing.JMenuItem();
         jBuscarPeriferico = new javax.swing.JMenuItem();
         jActualizarPeriferico = new javax.swing.JMenuItem();
         jEliminarPeriferico = new javax.swing.JMenuItem();
-        jAcercaDe = new javax.swing.JMenu();
 
         jMenu1.setText("File");
         jMenuBar1.add(jMenu1);
@@ -92,6 +97,30 @@ public class GUIPrincipal extends javax.swing.JFrame {
 
         jMenuBar2.add(jPcs);
 
+        jClientes.setText("Clientes");
+
+        jAdicionarCliente.setText("Adicionar");
+        jAdicionarCliente.addActionListener(this::jAdicionarClienteActionPerformed);
+        jClientes.add(jAdicionarCliente);
+
+        jListarClientes.setText("Listar");
+        jListarClientes.addActionListener(this::jListarClientesActionPerformed);
+        jClientes.add(jListarClientes);
+
+        jBuscarCliente.setText("Buscar");
+        jBuscarCliente.addActionListener(this::jBuscarClienteActionPerformed);
+        jClientes.add(jBuscarCliente);
+
+        jActualizarCliente.setText("Actualizar");
+        jActualizarCliente.addActionListener(this::jActualizarClienteActionPerformed);
+        jClientes.add(jActualizarCliente);
+
+        jEliminarCliente.setText("Eliminar");
+        jEliminarCliente.addActionListener(this::jEliminarClienteActionPerformed);
+        jClientes.add(jEliminarCliente);
+
+        jMenuBar2.add(jClientes);
+
         jPerifericos.setText("Perifericos");
 
         jAdicionarPeriferico.setText("Adicionar");
@@ -116,9 +145,6 @@ public class GUIPrincipal extends javax.swing.JFrame {
 
         jMenuBar2.add(jPerifericos);
 
-        jAcercaDe.setText("Acerca de...");
-        jMenuBar2.add(jAcercaDe);
-
         setJMenuBar(jMenuBar2);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -135,7 +161,7 @@ public class GUIPrincipal extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(123, 123, 123)
                 .addComponent(lblImagen)
-                .addContainerGap(1873, Short.MAX_VALUE))
+                .addContainerGap(1880, Short.MAX_VALUE))
         );
 
         pack();
@@ -191,6 +217,31 @@ public class GUIPrincipal extends javax.swing.JFrame {
         ventanaEliminar.setVisible(true);
     }//GEN-LAST:event_jEliminarPerifericoActionPerformed
 
+    private void jAdicionarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jAdicionarClienteActionPerformed
+        GUIAdicionarCliente ventanaAdicionar = new GUIAdicionarCliente ();
+        ventanaAdicionar.setVisible(true);
+    }//GEN-LAST:event_jAdicionarClienteActionPerformed
+
+    private void jListarClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jListarClientesActionPerformed
+        GUIListarCliente ventanaListar = new GUIListarCliente ();
+        ventanaListar.setVisible(true);
+    }//GEN-LAST:event_jListarClientesActionPerformed
+
+    private void jBuscarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBuscarClienteActionPerformed
+        GUIBuscarCliente ventanaBuscar = new GUIBuscarCliente ();
+        ventanaBuscar.setVisible(true);
+    }//GEN-LAST:event_jBuscarClienteActionPerformed
+
+    private void jActualizarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jActualizarClienteActionPerformed
+        GUIActualizarCliente ventanaActualizar = new GUIActualizarCliente ();
+        ventanaActualizar.setVisible(true);
+    }//GEN-LAST:event_jActualizarClienteActionPerformed
+
+    private void jEliminarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jEliminarClienteActionPerformed
+        GUIEliminarCliente ventanaEliminar = new GUIEliminarCliente ();
+        ventanaEliminar.setVisible(true);
+    }//GEN-LAST:event_jEliminarClienteActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -218,16 +269,21 @@ public class GUIPrincipal extends javax.swing.JFrame {
     
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JMenu jAcercaDe;
+    private javax.swing.JMenuItem jActualizarCliente;
     private javax.swing.JMenuItem jActualizarPc;
     private javax.swing.JMenuItem jActualizarPeriferico;
+    private javax.swing.JMenuItem jAdicionarCliente;
     private javax.swing.JMenuItem jAdicionarPc;
     private javax.swing.JMenuItem jAdicionarPeriferico;
     private javax.swing.JMenu jArchivo;
+    private javax.swing.JMenuItem jBuscarCliente;
     private javax.swing.JMenuItem jBuscarPc;
     private javax.swing.JMenuItem jBuscarPeriferico;
+    private javax.swing.JMenu jClientes;
+    private javax.swing.JMenuItem jEliminarCliente;
     private javax.swing.JMenuItem jEliminarPc;
     private javax.swing.JMenuItem jEliminarPeriferico;
+    private javax.swing.JMenuItem jListarClientes;
     private javax.swing.JMenuItem jListarPc;
     private javax.swing.JMenuItem jListarPeriferico;
     private javax.swing.JMenu jMenu1;

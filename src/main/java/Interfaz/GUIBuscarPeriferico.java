@@ -146,24 +146,33 @@ public class GUIBuscarPeriferico extends javax.swing.JFrame {
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
         try {
-        int id = Integer.parseInt(txtIdperifericobuscar.getText());
-        
-        com.mycompany.model.Periferico peri = Servicio.ServicioPeriferico.buscarPerifericoPorId(id);
-        
-        if (peri != null) {
- 
-            txtMarcabuscar.setText(peri.getNombre());
-            txtPreciobuscar.setText(String.valueOf(peri.getPrecio()));
-            txtEstadobuscar.setText(peri.getEstado());
-            txtIdPCbuscar.setText(String.valueOf(peri.getIdPc()));
-            
-            JOptionPane.showMessageDialog(this, "Periférico encontrado");
-        } else {
-            JOptionPane.showMessageDialog(this, "Periférico no encontrado");
+            if (txtIdperifericobuscar.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Por favor, ingrese el ID del Periférico.");
+                return;
+            }
+
+            int id = Integer.parseInt(txtIdperifericobuscar.getText().trim());
+            Periferico peri = Servicio.ServicioPeriferico.buscarPorId(id);
+
+            if (peri != null) {
+                txtIdperifericobuscar.setText(String.valueOf(peri.getId()));
+                txtMarcabuscar.setText(peri.getNombre());
+                txtPreciobuscar.setText(String.valueOf(peri.getPrecio()));
+                txtEstadobuscar.setText("A");
+                
+                txtIdPCbuscar.setText("N/A (Independiente)");
+                txtIdPCbuscar.setEditable(false);
+                txtIdperifericobuscar.setEditable(false);
+            } else {
+                JOptionPane.showMessageDialog(this, "❌ Periférico no encontrado.");
+                txtMarcabuscar.setText("");
+                txtPreciobuscar.setText("");
+                txtEstadobuscar.setText("");
+                txtIdPCbuscar.setText("");
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "El ID debe ser un número entero.");
         }
-    } catch (NumberFormatException e) {
-        JOptionPane.showMessageDialog(this, "ID inválido");
-    }
     }//GEN-LAST:event_btnBuscarActionPerformed
 
     private void txtMarcabuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtMarcabuscarActionPerformed

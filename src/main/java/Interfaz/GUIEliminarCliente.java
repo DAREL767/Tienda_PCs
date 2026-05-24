@@ -4,21 +4,20 @@
  */
 package Interfaz;
 
-import com.mycompany.model.Pc;
 import javax.swing.JOptionPane;
 
 /**
  *
  * @author jamed
  */
-public class GUIActualizarPc extends javax.swing.JFrame {
+public class GUIEliminarCliente extends javax.swing.JFrame {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(GUIActualizarPc.class.getName());
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(GUIEliminarCliente.class.getName());
 
     /**
-     * Creates new form GUIActualizarPc
+     * Creates new form GUIEliminarCliente
      */
-    public GUIActualizarPc() {
+    public GUIEliminarCliente() {
         initComponents();
         this.setResizable(false);
         this.pack(); 
@@ -34,34 +33,34 @@ public class GUIActualizarPc extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        txtCorreo = new javax.swing.JTextField();
         txtEstado = new javax.swing.JTextField();
-        btnBuscar = new javax.swing.JButton();
+        btnBuscar2 = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        btnActualizar = new javax.swing.JButton();
+        btnEliminar = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
-        txtIdActualizar = new javax.swing.JTextField();
+        txtIdEliminar = new javax.swing.JTextField();
         txtMarca = new javax.swing.JTextField();
-        txtPrecio = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        btnBuscar.setText("Buscar");
-        btnBuscar.addActionListener(this::btnBuscarActionPerformed);
+        btnBuscar2.setText("Buscar");
+        btnBuscar2.addActionListener(this::btnBuscar2ActionPerformed);
 
-        jLabel2.setText("Marca: ");
+        jLabel2.setText("Nombre:");
 
-        jLabel1.setText("Id: ");
+        jLabel1.setText("Cedula:");
 
-        jLabel3.setText("Precio:");
+        jLabel3.setText("Correo:");
 
-        btnActualizar.setText("Actualizar");
-        btnActualizar.addActionListener(this::btnActualizarActionPerformed);
+        btnEliminar.setText("Eliminar");
+        btnEliminar.addActionListener(this::btnEliminarActionPerformed);
 
         jLabel5.setText("Estado:");
 
-        txtIdActualizar.addActionListener(this::txtIdActualizarActionPerformed);
+        txtIdEliminar.addActionListener(this::txtIdEliminarActionPerformed);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -77,7 +76,7 @@ public class GUIActualizarPc extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel3)
                         .addGap(18, 18, 18)
-                        .addComponent(txtPrecio))
+                        .addComponent(txtCorreo))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addGap(18, 18, 18)
@@ -85,14 +84,14 @@ public class GUIActualizarPc extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addGap(18, 18, 18)
-                        .addComponent(txtIdActualizar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(txtIdEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(97, 97, 97)
-                        .addComponent(btnActualizar)))
+                        .addComponent(btnEliminar)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(279, Short.MAX_VALUE)
-                .addComponent(btnBuscar)
+                .addContainerGap(258, Short.MAX_VALUE)
+                .addComponent(btnBuscar2)
                 .addGap(162, 162, 162))
         );
         layout.setVerticalGroup(
@@ -101,7 +100,7 @@ public class GUIActualizarPc extends javax.swing.JFrame {
                 .addGap(66, 66, 66)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(txtIdActualizar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtIdEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
@@ -109,71 +108,87 @@ public class GUIActualizarPc extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(txtPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtCorreo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
                     .addComponent(txtEstado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(66, 66, 66)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnBuscar)
-                    .addComponent(btnActualizar))
-                .addContainerGap(64, Short.MAX_VALUE))
+                    .addComponent(btnBuscar2)
+                    .addComponent(btnEliminar))
+                .addContainerGap(57, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
-        try {
-            if (txtIdActualizar.getText().trim().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Por favor, ingrese el ID del PC.");
+    private void btnBuscar2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscar2ActionPerformed
+       try {
+            if (txtIdEliminar.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Por favor, ingrese la cédula del cliente a buscar.");
                 return;
             }
 
-            int id = Integer.parseInt(txtIdActualizar.getText().trim());
-            Pc pc = Servicio.ServicioPC.buscarPorId(id);
+            int cedula = Integer.parseInt(txtIdEliminar.getText().trim());
+            
+            com.mycompany.model.Cliente cliente = Servicio.ServicioCliente.buscarPorCedula(cedula);
 
-            if (pc != null) {
-                txtIdActualizar.setText(String.valueOf(pc.getId())); 
-                txtMarca.setText(pc.getMarca());
-                txtPrecio.setText(String.valueOf(pc.getPrecio()));
-                txtEstado.setText(pc.getEstado());
+            if (cliente != null) {
+                txtMarca.setText(cliente.getNombre());
+                txtCorreo.setText(cliente.getCorreo());
+                txtEstado.setText("Activo");
                 
-                txtIdActualizar.setEditable(false); 
+                txtIdEliminar.setEditable(false);
             } else {
-                JOptionPane.showMessageDialog(this, "❌ El PC solicitado no existe o fue eliminado.");
+                JOptionPane.showMessageDialog(this, "❌ Cliente no encontrado o se encuentra Inactivo.");
                 txtMarca.setText("");
-                txtPrecio.setText("");
+                txtCorreo.setText("");
                 txtEstado.setText("");
             }
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "El ID del PC debe ser un número entero.");
+            JOptionPane.showMessageDialog(this, "La cédula debe ser un valor numérico entero.");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al buscar cliente: " + e.getMessage());
         }
-    }//GEN-LAST:event_btnBuscarActionPerformed
+    }//GEN-LAST:event_btnBuscar2ActionPerformed
 
-    private void btnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarActionPerformed
+    private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
         try {
-        int id = Integer.parseInt(txtIdActualizar.getText().trim());
-        String nuevaMarca = txtMarca.getText().trim();
-        double nuevoPrecio = Double.parseDouble(txtPrecio.getText().trim());
-
-        boolean completado = Servicio.ServicioPC.actualizarPc(id, nuevaMarca, nuevoPrecio);
-
-        if (completado) {
-            JOptionPane.showMessageDialog(this, "PC actualizado correctamente.");
-            txtIdActualizar.setEditable(true); 
-        } else {
-            JOptionPane.showMessageDialog(this, "Error al intentar actualizar el PC.");
+            if (txtIdEliminar.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Por favor, busque y seleccione un cliente primero.");
+                return;
+            }
+            
+            int cedula = Integer.parseInt(txtIdEliminar.getText().trim());
+            
+            int confirmar = JOptionPane.showConfirmDialog(this, 
+                    "¿Está seguro de eliminar lógicamente a este cliente?", 
+                    "Confirmar Eliminación", JOptionPane.YES_NO_OPTION);
+            
+            if (confirmar == JOptionPane.YES_OPTION) {
+                boolean exito = Servicio.ServicioCliente.eliminarLogico(cedula);
+                
+                if (exito) {
+                    JOptionPane.showMessageDialog(this, "Cliente eliminado lógicamente con éxito.");
+                    
+                    txtIdEliminar.setText("");
+                    txtIdEliminar.setEditable(true);
+                    txtMarca.setText("");
+                    txtCorreo.setText("");
+                    txtEstado.setText("");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Error al intentar eliminar el cliente.");
+                }
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al eliminar cliente: " + e.getMessage());
         }
-    } catch (NumberFormatException e) {
-        JOptionPane.showMessageDialog(this, "Verifique los valores numéricos ingresados.");
-    }
-    }//GEN-LAST:event_btnActualizarActionPerformed
+    }//GEN-LAST:event_btnEliminarActionPerformed
 
-    private void txtIdActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIdActualizarActionPerformed
+    private void txtIdEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIdEliminarActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtIdActualizarActionPerformed
+    }//GEN-LAST:event_txtIdEliminarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -197,19 +212,21 @@ public class GUIActualizarPc extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new GUIActualizarPc().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> new GUIEliminarCliente().setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnActualizar;
     private javax.swing.JButton btnBuscar;
+    private javax.swing.JButton btnBuscar1;
+    private javax.swing.JButton btnBuscar2;
+    private javax.swing.JButton btnEliminar;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JTextField txtCorreo;
     private javax.swing.JTextField txtEstado;
-    private javax.swing.JTextField txtIdActualizar;
+    private javax.swing.JTextField txtIdEliminar;
     private javax.swing.JTextField txtMarca;
-    private javax.swing.JTextField txtPrecio;
     // End of variables declaration//GEN-END:variables
 }

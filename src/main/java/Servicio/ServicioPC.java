@@ -5,12 +5,12 @@
 package Servicio;
 
 import com.mycompany.model.Pc;
-import conexion.DatabaseConecction;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
+import org.bson.Document;
+import org.bson.types.ObjectId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,120 +20,129 @@ import java.util.List;
  */
 public class ServicioPC { 
     
-    private static Connection conn = null;
-    private static Statement stmt = null;
-    private static ResultSet rs = null;
+    private static MongoCollection<Document> getColeccion() {
+        MongoDatabase db = conexion.DatabaseConecction.getDatabase();
+        return db.getCollection("PCs");
+    }
     
-    
-    public static void guardarPc(Pc miPc) {
-        String sql = "INSERT INTO PC (id, marca, precio, estado) VALUES (?, ?, ?, ?)";
-        
-        try (Connection con = DatabaseConecction.getConnection(); 
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            
-            ps.setInt(1, miPc.getId());
-            ps.setString(2, miPc.getMarca());
-            ps.setDouble(3, miPc.getPrecio());
-            ps.setString(4, miPc.getEstado());
-            
-            ps.executeUpdate();
-            System.out.println("Pc guardado: " + miPc.getMarca());
-            
-        } catch (SQLException e) {
+    public static boolean guardarPc(Pc miPc, ObjectId idClienteMongo, ObjectId idPerifericoMongo) {
+        try {
+            if (idClienteMongo == null || idPerifericoMongo == null) {
+                System.err.println("Error: No se puede crear el PC sin un Cliente o Periférico válido.");
+                return false;
+            }
+
+            Document doc = new Document()
+                .append("id", miPc.getId()) 
+                .append("marca", miPc.getMarca())
+                .append("precio", miPc.getPrecio()) 
+                .append("id_cliente", idClienteMongo)      
+                .append("id_periferico", idPerifericoMongo)  
+                .append("estado", "A");
+
+            getColeccion().insertOne(doc);
+            System.out.println("Pc guardado.");
+            return true;
+
+        } catch (Exception e) {
             System.err.println("Error al guardar Pc: " + e.getMessage());
+            return false;
         }
     }
     
-    public static void actualizarPc(Pc miPc) {
-        String sql = "UPDATE PC SET marca=?, precio=?, estado=? WHERE id=?";
-        
-        try (Connection con = DatabaseConecction.getConnection(); 
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            
-            ps.setString(1, miPc.getMarca());
-            ps.setDouble(2, miPc.getPrecio());
-            ps.setString(3, miPc.getEstado());
-            ps.setInt(4, miPc.getId());
-            
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            System.err.println("Error al actualizar Pc: " + e.getMessage());
+    public static boolean actualizarPc(int id, String nuevaMarca, double nuevoPrecio) {
+        try {
+            com.mongodb.client.MongoDatabase db = conexion.DatabaseConecction.getDatabase();
+            db.getCollection("PCs").updateOne(
+                com.mongodb.client.model.Filters.eq("id", id),
+                com.mongodb.client.model.Updates.combine(
+                    com.mongodb.client.model.Updates.set("marca", nuevaMarca),
+                    com.mongodb.client.model.Updates.set("precio", nuevoPrecio)
+                )
+            );
+            return true;
+        } catch (Exception e) {
+            System.err.println("Error al actualizar PC en Mongo: " + e.getMessage());
+            return false;
         }
     }
     
-    public static Pc buscarPcPorId(int idBusqueda) {
-        String sql = "SELECT id, marca, precio, estado FROM PC WHERE id = ?";
-        try (Connection con = DatabaseConecction.getConnection(); // Corregido
-             PreparedStatement ps = con.prepareStatement(sql)) {
+    public static Pc buscarPorId(int id) {
+        try {
+            com.mongodb.client.MongoDatabase db = conexion.DatabaseConecction.getDatabase();
+            org.bson.Document doc = db.getCollection("PCs").find(com.mongodb.client.model.Filters.and(
+                com.mongodb.client.model.Filters.eq("id", id),
+                com.mongodb.client.model.Filters.eq("estado", "A")
+            )).first();
+
+            if (doc != null) {
+                return new Pc(
+                    doc.getInteger("id"),
+                    doc.getString("marca"),
+                    doc.getDouble("precio"),
+                    doc.getString("estado")
+                );
+            }
+        } catch (Exception e) {
+            System.err.println("Error al buscar PC en Mongo: " + e.getMessage());
+        }
+        return null;
+    }
+    
+    public static java.util.List<org.bson.Document> listarPcs() {
+        java.util.List<org.bson.Document> listaCompleta = new java.util.ArrayList<>();
+        try {
+
+            com.mongodb.client.MongoDatabase db = conexion.DatabaseConecction.getDatabase();
             
-            ps.setInt(1, idBusqueda);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return new Pc(
-                        rs.getInt("id"),
-                        rs.getString("marca"),
-                        rs.getDouble("precio"),
-                        rs.getString("estado")
-                    );
+
+            for (org.bson.Document pc : db.getCollection("PCs").find(com.mongodb.client.model.Filters.eq("estado", "A"))) {
+                
+                org.bson.types.ObjectId idCliente = pc.getObjectId("id_cliente");
+                if (idCliente != null) {
+                    org.bson.Document cliente = db.getCollection("Clientes").find(com.mongodb.client.model.Filters.eq("_id", idCliente)).first();
+                    if (cliente != null) {
+                        pc.append("nombre_cliente", cliente.getString("nombre"));
+                    }
                 }
+
+                org.bson.types.ObjectId idPeriferico = pc.getObjectId("id_periferico");
+                if (idPeriferico != null) {
+                    org.bson.Document periferico = db.getCollection("Perifericos").find(com.mongodb.client.model.Filters.eq("_id", idPeriferico)).first();
+                    if (periferico != null) {
+                        pc.append("nombre_periferico", periferico.getString("nombre"));
+                    }
+                }
+
+                listaCompleta.add(pc);
             }
-        } catch (SQLException e) {
-            System.err.println("Error al buscar PC: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Error al listar PCs con relaciones en NoSQL: " + e.getMessage());
         }
-        return null; 
+        return listaCompleta;
     }
     
-    public static List<Pc> listarPcs() {
-        List<Pc> lista = new ArrayList<>();
-        String sql = "SELECT id, marca, precio, estado FROM PC WHERE estado = 'A'";
-        
-        try (Connection con = DatabaseConecction.getConnection(); // Corregido
-             PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-            
-            while (rs.next()) {
-                lista.add(new Pc(
-                    rs.getInt("id"),
-                    rs.getString("marca"),
-                    rs.getDouble("precio"),
-                    rs.getString("estado")
-                ));
-            }
-        } catch (SQLException e) {
-            System.err.println("Error al listar PCs: " + e.getMessage());
+    public static void eliminarPc(int id) {
+        try {
+            getColeccion().updateOne(
+                Filters.eq("id", id),
+                Updates.set("estado", "I")
+            );
+            System.out.println("Registro de PC marcado como inactivo.");
+        } catch (Exception e) {
+            System.err.println("Error al eliminar: " + e.getMessage());
         }
-        return lista;
     }
-    
-    public void eliminarPc(int id) {
-    String sql = "DELETE FROM PC WHERE id = ?";
-    
-    try (Connection con = DatabaseConecction.getConnection();
-         PreparedStatement ps = con.prepareStatement(sql)) {
-        
-        ps.setInt(1, id);
-        ps.executeUpdate();
-        System.out.println("Registro de PC eliminado con éxito.");
-        
-    } catch (SQLException e) {
-        System.err.println("Error al eliminar (verifica si tiene periféricos): " + e.getMessage());
-    }
-}
     
     public static double calcularGranTotal() {
         double total = 0;
-        String sql = "SELECT SUM(precio) AS total_inventario FROM PC WHERE estado = 'A'";
-        
-        try (Connection con = DatabaseConecction.getConnection(); 
-             PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-            
-            if (rs.next()) {
-                total = rs.getDouble("total_inventario");
+        try {
+            for (Document doc : getColeccion().find(Filters.eq("estado", "A"))) {
+                total += doc.getDouble("precio");
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             System.err.println("Error al calcular suma: " + e.getMessage());
         }
         return total;
     }
-}        
+}

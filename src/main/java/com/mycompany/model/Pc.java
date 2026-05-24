@@ -14,6 +14,9 @@ public class Pc {
     private String marca;
     private double precio;
     private String estado;
+    
+    public Pc () {
+    }
 
     public Pc(int id, String marca, double precio, String estado) {
         this.id = id;

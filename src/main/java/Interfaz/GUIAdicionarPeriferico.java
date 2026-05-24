@@ -4,7 +4,6 @@
  */
 package Interfaz;
 
-import Servicio.ServicioPeriferico;
 import com.mycompany.model.Periferico;
 import javax.swing.JOptionPane;
 
@@ -43,8 +42,6 @@ public class GUIAdicionarPeriferico extends javax.swing.JFrame {
         txtId2 = new javax.swing.JTextField();
         txtMarca = new javax.swing.JTextField();
         txtPrecio = new javax.swing.JTextField();
-        jLabel6 = new javax.swing.JLabel();
-        txtIdPc = new javax.swing.JTextField();
         cbEsGamer = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -54,17 +51,13 @@ public class GUIAdicionarPeriferico extends javax.swing.JFrame {
 
         jLabel1.setText("Id: ");
 
-        jLabel2.setText("Marca: ");
+        jLabel2.setText("Nombre:");
 
         jLabel3.setText("Precio:");
 
         jLabel4.setText("Gamer:");
 
         txtId2.addActionListener(this::txtId2ActionPerformed);
-
-        jLabel6.setText("Id Pc:");
-
-        txtIdPc.addActionListener(this::txtIdPcActionPerformed);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -73,32 +66,29 @@ public class GUIAdicionarPeriferico extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
+                        .addGap(198, 198, 198)
+                        .addComponent(btnGuardar))
+                    .addGroup(layout.createSequentialGroup()
                         .addGap(27, 27, 27)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel6)
-                                .addGap(18, 18, 18)
-                                .addComponent(txtIdPc, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(jLabel4)
-                                    .addGap(18, 18, 18)
-                                    .addComponent(cbEsGamer, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jLabel4)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(cbEsGamer, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                 .addGroup(layout.createSequentialGroup()
                                     .addComponent(jLabel3)
                                     .addGap(18, 18, 18)
-                                    .addComponent(txtPrecio))
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(jLabel2)
-                                    .addGap(18, 18, 18)
-                                    .addComponent(txtMarca, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(jLabel1)
-                                    .addGap(18, 18, 18)
-                                    .addComponent(txtId2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(198, 198, 198)
-                        .addComponent(btnGuardar)))
+                                    .addComponent(txtPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel1)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(txtId2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel2)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(txtMarca, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)))))))
                 .addContainerGap(232, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -110,21 +100,17 @@ public class GUIAdicionarPeriferico extends javax.swing.JFrame {
                     .addComponent(txtId2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel6)
-                    .addComponent(txtIdPc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtMarca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2))
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(txtMarca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(txtPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3))
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(txtPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel4)
                     .addComponent(cbEsGamer))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 74, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 114, Short.MAX_VALUE)
                 .addComponent(btnGuardar)
                 .addGap(43, 43, 43))
         );
@@ -134,59 +120,42 @@ public class GUIAdicionarPeriferico extends javax.swing.JFrame {
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
         try {
+            if (txtId2.getText().trim().isEmpty() || txtMarca.getText().trim().isEmpty() || txtPrecio.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Por favor, llene todos los campos del periférico.");
+                return;
+            }
 
-        if (txtId2.getText().isEmpty() || txtIdPc.getText().isEmpty() || 
-            txtMarca.getText().isEmpty() || txtPrecio.getText().isEmpty()) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Por favor, llene todos los campos.");
-            return;
+            Periferico p = new Periferico();
+            
+            p.setId(Integer.parseInt(txtId2.getText().trim()));
+            p.setNombre(txtMarca.getText().trim());
+            p.setPrecio(Double.parseDouble(txtPrecio.getText().trim()));
+            p.setEsGamer(cbEsGamer.isSelected());
+            p.setEstado("A");
+
+            boolean exito = Servicio.ServicioPeriferico.grabarPeriferico(p);
+
+            if (exito) {
+                JOptionPane.showMessageDialog(this, "Periférico guardado correctamente.");
+                
+                txtId2.setText("");
+                txtMarca.setText("");
+                txtPrecio.setText("");
+                cbEsGamer.setSelected(false);
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al guardar el periférico en la base de datos.");
+            }
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Por favor, verifique los valores numéricos de ID y Precio.");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error inesperado: " + e.getMessage());
         }
-
-        int id = Integer.parseInt(txtId2.getText());
-        int idPc = Integer.parseInt(txtIdPc.getText());
-        String nombre = txtMarca.getText();
-        double precio = Double.parseDouble(txtPrecio.getText());
-        boolean esGamer = cbEsGamer.isSelected();
-
-        com.mycompany.model.Pc pcExistente = Servicio.ServicioPC.buscarPcPorId(idPc);
-
-        if (pcExistente == null) {
-            javax.swing.JOptionPane.showMessageDialog(this, 
-                "ERROR: El PC con ID " + idPc + " no existe.\n" +
-                "Debe usar un ID de PC válido que ya esté registrado.", 
-                "Validación de PC", javax.swing.JOptionPane.WARNING_MESSAGE);
-            return; 
-        }
-
-        com.mycompany.model.Periferico nuevoPeri = new com.mycompany.model.Periferico(id, idPc, nombre, precio, "A");
-        nuevoPeri.setEsGamer(esGamer); 
-
-        if (Servicio.ServicioPeriferico.grabarPeriferico(nuevoPeri)) {
-            javax.swing.JOptionPane.showMessageDialog(this, "¡Periférico guardado con éxito!");
-
-            txtId2.setText("");
-            txtIdPc.setText("");
-            txtMarca.setText("");
-            txtPrecio.setText("");
-            cbEsGamer.setSelected(false);
-        } else {
-            javax.swing.JOptionPane.showMessageDialog(this, "Error al guardar: Revise la consola para más detalles.");
-        }
-        
-    } catch (NumberFormatException e) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Error: El ID y el Precio deben ser números válidos.");
-    } catch (Exception e) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Error inesperado: " + e.getMessage());
-        e.printStackTrace(); 
-    }
     }//GEN-LAST:event_btnGuardarActionPerformed
 
     private void txtId2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtId2ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtId2ActionPerformed
-
-    private void txtIdPcActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIdPcActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtIdPcActionPerformed
 
     /**
      * @param args the command line arguments
@@ -220,9 +189,7 @@ public class GUIAdicionarPeriferico extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JTextField txtId2;
-    private javax.swing.JTextField txtIdPc;
     private javax.swing.JTextField txtMarca;
     private javax.swing.JTextField txtPrecio;
     // End of variables declaration//GEN-END:variables

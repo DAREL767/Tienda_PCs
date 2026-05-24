@@ -142,19 +142,36 @@ public class GUIEliminarPeriferico extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
-        int id = Integer.parseInt(txtIdEliminar.getText());
-    
-        int confirmacion = JOptionPane.showConfirmDialog(this, "¿Seguro que desea eliminar este registro?");
-
-        if (confirmacion == JOptionPane.YES_OPTION) {
-            if (Servicio.ServicioPeriferico.eliminarLogico(id)) {
-                JOptionPane.showMessageDialog(this, "Registro eliminado (Inactivo).");
-
-                txtMarca.setText("");
-                txtPrecio.setText("");
-            } else {
-                JOptionPane.showMessageDialog(this, "No se pudo eliminar el registro.");
+        try {
+            if (txtIdEliminar.getText().trim().isEmpty() || txtMarca.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Por favor, busque un periférico primero.");
+                return;
             }
+
+            int id = Integer.parseInt(txtIdEliminar.getText().trim());
+            
+            int confirmar = JOptionPane.showConfirmDialog(this, 
+                    "¿Seguro que desea eliminar lógicamente este periférico?", 
+                    "Confirmar", JOptionPane.YES_NO_OPTION);
+
+            if (confirmar == JOptionPane.YES_OPTION) {
+                boolean exito = Servicio.ServicioPeriferico.eliminarLogico(id);
+
+                if (exito) {
+                    JOptionPane.showMessageDialog(this, "Periférico deshabilitado con éxito.");
+                    
+                    txtIdEliminar.setText("");
+                    txtIdEliminar.setEditable(true);
+                    txtMarca.setText("");
+                    txtPrecio.setText("");
+                    txtEstado.setText("");
+                    txtIdEliminar1.setText(""); 
+                } else {
+                    JOptionPane.showMessageDialog(this, "Error al intentar eliminar el periférico.");
+                }
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
         }
     }//GEN-LAST:event_btnEliminarActionPerformed
 
@@ -164,24 +181,33 @@ public class GUIEliminarPeriferico extends javax.swing.JFrame {
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
         try {
-        int id = Integer.parseInt(txtIdEliminar.getText());
-        
-        com.mycompany.model.Periferico peri = Servicio.ServicioPeriferico.buscarPerifericoPorId(id);
-        
-        if (peri != null) {
- 
-            txtMarca.setText(peri.getNombre());
-            txtPrecio.setText(String.valueOf(peri.getPrecio()));
-            txtEstado.setText(peri.getEstado());
-            txtIdEliminar1.setText(String.valueOf(peri.getIdPc()));
-            
-            JOptionPane.showMessageDialog(this, "Periférico encontrado");
-        } else {
-            JOptionPane.showMessageDialog(this, "Periférico no encontrado");
+            if (txtIdEliminar.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Por favor, ingrese el ID del Periférico.");
+                return;
+            }
+
+            int id = Integer.parseInt(txtIdEliminar.getText().trim());
+            Periferico peri = Servicio.ServicioPeriferico.buscarPorId(id);
+
+            if (peri != null) {
+                txtIdEliminar.setText(String.valueOf(peri.getId()));
+                txtMarca.setText(peri.getNombre());
+                txtPrecio.setText(String.valueOf(peri.getPrecio()));
+                txtEstado.setText("A");
+                
+                txtIdEliminar1.setText("N/A (Independiente)");
+                txtIdEliminar1.setEditable(false);
+                txtIdEliminar.setEditable(false);
+            } else {
+                JOptionPane.showMessageDialog(this, "❌ Periférico no encontrado.");
+                txtMarca.setText("");
+                txtPrecio.setText("");
+                txtEstado.setText("");
+                txtIdEliminar1.setText("");
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "El ID debe ser un número entero.");
         }
-    } catch (NumberFormatException e) {
-        JOptionPane.showMessageDialog(this, "ID inválido");
-    }
     }//GEN-LAST:event_btnBuscarActionPerformed
 
     private void txtIdEliminar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIdEliminar1ActionPerformed

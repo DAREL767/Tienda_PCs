@@ -5,145 +5,136 @@
 package Servicio;
 
 import com.mycompany.model.Periferico;
-import conexion.DatabaseConecction; 
-import java.sql.*;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
+import org.bson.Document;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- * @author jamed
- */
 public class ServicioPeriferico {
 
-    private static Connection conn = null;
-    private static PreparedStatement pstmt = null;
-    private static ResultSet rs = null;
-
-    private static void cerrarConexiones() {
-        try {
-            if (rs != null) rs.close();
-            if (pstmt != null) pstmt.close();
-            if (conn != null) conn.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    } 
+    private static MongoCollection<Document> getColeccion() {
+        MongoDatabase db = conexion.DatabaseConecction.getDatabase();
+        return db.getCollection("Perifericos");
+    }
 
     public static boolean grabarPeriferico(Periferico peri) {
+        try {
+            Document doc = new Document()
+                .append("id", peri.getId())
+                .append("nombre", peri.getNombre())
+                .append("precio", peri.getPrecio()) 
+                .append("es_gamer", peri.isEsGamer())
+                .append("estado", "A"); 
 
-        
-        String sql = "INSERT INTO PERIFERICO (id, idPc, nombre, precio, es_gamer, estado) VALUES (?, ?, ?, ?, ?, ?)";
-
-        try (Connection conn = DatabaseConecction.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setInt(1, peri.getId());
-            pstmt.setInt(2, peri.getIdPc());
-            pstmt.setString(3, peri.getNombre());
-            pstmt.setDouble(4, peri.getPrecio());
-            pstmt.setInt(5, peri.isEsGamer() ? 1 : 0); 
-            pstmt.setString(6, "A"); 
-
-            return pstmt.executeUpdate() > 0;
-
-        } catch (SQLException ex) {
-            System.out.println("Error al grabar: " + ex.getMessage());
+            getColeccion().insertOne(doc);
+            return true;
+        } catch (Exception ex) {
+            System.out.println("Error al grabar en Mongo: " + ex.getMessage());
             return false;
         }
     }
 
-    public static Periferico buscarPerifericoPorId(int idBusqueda) {
-    String sql = "SELECT * FROM PERIFERICO WHERE ID = ?";
-    try (Connection conn = DatabaseConecction.getConnection();
-         PreparedStatement pstmt = conn.prepareStatement(sql)) {
-        
-        pstmt.setInt(1, idBusqueda);
-        try (ResultSet rs = pstmt.executeQuery()) {
-            if (rs.next()) {
-                
-                Periferico p = new Periferico(
-                    rs.getInt("ID"),
-                    rs.getInt("IDPC"),
-                    rs.getString("NOMBRE"),
-                    rs.getDouble("PRECIO"),
-                    rs.getString("ESTADO")
-                );
+    public static Periferico buscarPorId(int id) {
+        try {
+            Document doc = getColeccion().find(Filters.and(
+                Filters.eq("id", id),
+                Filters.eq("estado", "A")
+            )).first();
 
-                p.setEsGamer(rs.getInt("ES_GAMER") == 1);
+            if (doc != null) {
+                Periferico p = new Periferico();
+                p.setId(doc.getInteger("id"));
+                p.setNombre(doc.getString("nombre"));
+                
+                if (doc.get("precio") instanceof Integer) {
+                    p.setPrecio(doc.getInteger("precio").doubleValue());
+                } else {
+                    p.setPrecio(doc.getDouble("precio"));
+                }
+                
+                if (doc.containsKey("es_gamer") && doc.get("es_gamer") != null) {
+                    p.setEsGamer(doc.getBoolean("es_gamer"));
+                } else {
+                    p.setEsGamer(false);
+                }
+                
                 return p;
             }
+        } catch (Exception e) {
+            System.err.println("Error al buscar periférico en Mongo: " + e.getMessage());
         }
-    } catch (SQLException ex) {
-        System.err.println("Error al buscar Periférico: " + ex.getMessage());
+        return null;
     }
-    return null;
-}
+
+    // 3. ACTUALIZAR POR ID PERSONALIZADO
+    public static boolean actualizarPeriferico(int id, String nuevoNombre, double nuevoPrecio) {
+        try {
+            getColeccion().updateOne(
+                Filters.eq("id", id),
+                Updates.combine(
+                    Updates.set("nombre", nuevoNombre),
+                    Updates.set("precio", nuevoPrecio)
+                )
+            );
+            return true;
+        } catch (Exception e) {
+            System.err.println("Error al actualizar periférico en Mongo: " + e.getMessage());
+            return false;
+        }
+    }
     
-    public static List<Periferico> listarTodos() {
+    // 4. ELIMINADO LÓGICO
+    public static boolean eliminarLogico(int pId) {
+        try {
+            getColeccion().updateOne(
+                Filters.eq("id", pId),
+                Updates.set("estado", "I")
+            );
+            return true;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+    
+    // 5. LISTAR
+    public static List<Periferico> listarPerifericos() {
         List<Periferico> lista = new ArrayList<>();
-        String sql = "SELECT * FROM PERIFERICO WHERE ESTADO = 'A'";
-        
-        try (Connection conn = DatabaseConecction.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql);
-             ResultSet rs = pstmt.executeQuery()) {
-            
-            while (rs.next()) {
-                lista.add(new Periferico(
-                    rs.getInt("ID"),
-                    rs.getInt("IDPC"),
-                    rs.getString("NOMBRE"),
-                    rs.getDouble("PRECIO"),
-                    rs.getString("ESTADO")
-                ));
+        try {
+            for (Document doc : getColeccion().find(Filters.eq("estado", "A"))) {
+                Periferico p = new Periferico();
+                p.setId(doc.getInteger("id"));
+                p.setNombre(doc.getString("nombre"));
+                if (doc.get("precio") instanceof Integer) {
+                    p.setPrecio(doc.getInteger("precio").doubleValue());
+                } else {
+                    p.setPrecio(doc.getDouble("precio"));
+                }
+                lista.add(p);
             }
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
         return lista;
     }
-    
+
+    // 6. SUMATORIA
     public static double obtenerSumaPrecios() {
-        String sql = "SELECT SUM(PRECIO) FROM PERIFERICO WHERE ESTADO = 'A'";
-        try (Connection conn = DatabaseConecction.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql);
-             ResultSet rs = pstmt.executeQuery()) {
-            if (rs.next()) return rs.getDouble(1);
-        } catch (SQLException ex) {
+        double total = 0;
+        try {
+            for (Document doc : getColeccion().find(Filters.eq("estado", "A"))) {
+                if (doc.get("precio") instanceof Integer) {
+                    total += doc.getInteger("precio").doubleValue();
+                } else {
+                    total += doc.getDouble("precio");
+                }
+            }
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
-        return 0;
+        return total;
     }
-
-    public static boolean actualizarPeriferico(Periferico p) {
-        String sql = "UPDATE PERIFERICO SET NOMBRE = ?, PRECIO = ?, IDPC = ? WHERE ID = ?";
-        try (Connection conn = conexion.DatabaseConecction.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setString(1, p.getNombre());
-            pstmt.setDouble(2, p.getPrecio());
-            pstmt.setInt(3, p.getIdPc()); 
-            pstmt.setInt(4, p.getId());
-
-            return pstmt.executeUpdate() > 0;
-        } catch (SQLException ex) {
-            System.out.println("Error al actualizar: " + ex.getMessage());
-            return false;
-        }
-    }
-    
-    public static boolean eliminarLogico(int pId) {
-        String sql = "UPDATE PERIFERICO SET ESTADO = 'I' WHERE ID = ?";
-        try {
-            conn = DatabaseConecction.getConnection();
-            pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, pId);
-            return pstmt.executeUpdate() > 0;
-        } catch (SQLException ex) {
-            return false;
-        } finally {
-            cerrarConexiones();
-        }
-    }
-    
 }

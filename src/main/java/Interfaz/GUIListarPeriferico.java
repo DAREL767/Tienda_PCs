@@ -4,11 +4,6 @@
  */
 package Interfaz;
 
-import Servicio.ServicioPC;
-import Servicio.ServicioPeriferico;
-import com.mycompany.model.Pc;
-import com.mycompany.model.Periferico;
-import java.util.List;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -48,13 +43,13 @@ public class GUIListarPeriferico extends javax.swing.JFrame {
 
         jListaPeriferico.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
             },
             new String [] {
-                "Id", "Marca", "Precio", "Estado", "Id PC", "Pc"
+                "Id", "Marca", "Precio", "Estado"
             }
         ));
         jScrollPane1.setViewportView(jListaPeriferico);
@@ -104,29 +99,43 @@ public class GUIListarPeriferico extends javax.swing.JFrame {
 
     private void btnListarPerifericoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnListarPerifericoActionPerformed
         
-    String[] columnas = {"ID", "ID PC", "Nombre", "Precio", "Gamer", "Estado"};
-    DefaultTableModel modelo = new DefaultTableModel(columnas, 0);
-    
-    List<com.mycompany.model.Periferico> lista = Servicio.ServicioPeriferico.listarTodos();
-    
-    for (com.mycompany.model.Periferico p : lista) {
-        Object[] fila = {
-            p.getId(),
-            p.getIdPc(),
-            p.getNombre(),
-            p.getPrecio(),
-            p.isEsGamer() ? "SÍ" : "NO",
-            p.getEstado()
-        };
-        modelo.addRow(fila);
-    }
-    
-    jListaPeriferico.setModel(modelo);
+    try {
+            String[] columnas = {"ID Periférico", "Nombre", "Precio", "Es Gamer"};
+            DefaultTableModel modelo = new DefaultTableModel(columnas, 0);
+            
+            com.mongodb.client.MongoDatabase db = conexion.DatabaseConecction.getDatabase();
+            
+            for (org.bson.Document doc : db.getCollection("Perifericos").find(com.mongodb.client.model.Filters.eq("estado", "A"))) {
+                Object[] fila = new Object[4];
+                fila[0] = doc.getInteger("id");
+                fila[1] = doc.getString("nombre");
+                fila[2] = doc.getDouble("precio");
+                fila[3] = doc.getBoolean("es_gamer") ? "Sí" : "No";
+                
+                modelo.addRow(fila);
+            }
+            
+            jListaPeriferico.setModel(modelo);
+            
+        } catch (Exception e) {
+            System.err.println("Error al listar periféricos: " + e.getMessage());
+        }
     }//GEN-LAST:event_btnListarPerifericoActionPerformed
 
     private void btnSumatoriaPerifericoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSumatoriaPerifericoActionPerformed
-       double total = ServicioPeriferico.obtenerSumaPrecios();
-        lblTotal2.setText("Total Precios: $" + total);
+       try {
+            com.mongodb.client.MongoDatabase db = conexion.DatabaseConecction.getDatabase();
+            double total = 0;
+            
+            for (org.bson.Document doc : db.getCollection("Perifericos").find(com.mongodb.client.model.Filters.eq("estado", "A"))) {
+                total += doc.getDouble("precio");
+            }
+            
+            lblTotal2.setText("Total Periféricos: $" + total);
+            
+        } catch (Exception e) {
+            System.err.println("Error en sumatoria periféricos: " + e.getMessage());
+        }
     }//GEN-LAST:event_btnSumatoriaPerifericoActionPerformed
 
     /**

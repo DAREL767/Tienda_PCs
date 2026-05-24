@@ -4,36 +4,37 @@
  */
 package conexion;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoDatabase;
 
 /**
  *
  * @author ORIANA BONILLA
  */
 public class DatabaseConecction {
-    private static String DB_URL  = "jdbc:oracle:thin:@localhost:1521/XEPDB1";
-    private static String USER = "system";
-    private static String PASS = "ORACLE";
+    private static MongoClient mongoClient = null;
+    private static MongoDatabase database = null;
     
-    public static Connection getConnection() {
-        Connection connection = null;
+    private static final String DATABASE_NAME = "PER2026"; 
 
-        try {
-            Class.forName("oracle.jdbc.driver.OracleDriver");
-
-            connection = DriverManager.getConnection(DB_URL, USER, PASS);
-            System.out.println("Conexion establecida");
-        } catch (ClassNotFoundException e) {
-            System.err.println("Oracle JDBC no encontrado!");
-            e.printStackTrace();
-        } catch (SQLException e) {
-            System.err.println("Conexion fallida!");
-            e.printStackTrace();
+    public static MongoDatabase getDatabase() {
+        if (database == null) {
+            try {
+                mongoClient = MongoClients.create("mongodb://localhost:27017");
+                database = mongoClient.getDatabase(DATABASE_NAME);
+                System.out.println("Conexión exitosa a MongoDB: " + DATABASE_NAME);
+            } catch (Exception e) {
+                System.out.println("Error al conectar a MongoDB: " + e.getMessage());
+            }
         }
-
-        return connection;
+        return database;
     }
-    
+
+    public static void cerrarConexion() {
+        if (mongoClient != null) {
+            mongoClient.close();
+            System.out.println("🔌Conexión de MongoDB cerrada.");
+        }
+    }
 }
